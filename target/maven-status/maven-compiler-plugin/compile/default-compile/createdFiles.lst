@@ -1,0 +1,8 @@
+Controllers\TaskDelegator.class
+baseObjects\Project.class
+additionalObjects\Specialization.class
+Controllers\ControllerIO.class
+additionalObjects\TaskState.class
+baseObjects\Developer.class
+Controllers\ControllerDB.class
+baseObjects\Task.class
