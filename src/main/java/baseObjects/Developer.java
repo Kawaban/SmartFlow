@@ -1,46 +1,70 @@
 package baseObjects;
 
 import additionalObjects.Specialization;
+import org.json.JSONObject;
 
+
+import javax.persistence.*;
 import java.util.ArrayList;
-
+@Entity
+@Table(name="developers")
 public class Developer {
-    private String id;
-    private String projectId;
-    private String taskId;
+    @Id
+    @Column(name="id")
+    private long id;
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="project_id")
+    private Project project;
+    @OneToOne
+    @JoinColumn(name="task_id")
+    private Task task;
+    @Enumerated(EnumType.STRING)
+    @Column(name="specialization")
     private Specialization specialization;
-    private ArrayList<Task> tasksLog;
 
-    public Developer(String id, Specialization specialization) {
+    @OneToMany(mappedBy = "developer",fetch=FetchType.EAGER)
+    private ArrayList<TaskLog> tasksLogs;
+
+    public Developer(long id, Specialization specialization) {
         this.id = id;
         this.specialization = specialization;
-        tasksLog=new ArrayList<Task>();
-        projectId="none";
-        taskId="none";
     }
 
-    public String getId() {
+    public Developer(long id, Project project, Specialization specialization) {
+        this.id = id;
+        this.project = project;
+        this.specialization = specialization;
+    }
+
+    public Developer(long id, Project project, Task task, Specialization specialization) {
+        this.id = id;
+        this.project = project;
+        this.task = task;
+        this.specialization = specialization;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public String getTaskId() {
-        return taskId;
+    public Task getTask() {
+        return task;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     public Specialization getSpecialization() {
@@ -51,11 +75,39 @@ public class Developer {
         this.specialization = specialization;
     }
 
-    public ArrayList<Task> getTasksLog() {
-        return tasksLog;
+    public ArrayList<TaskLog> getTasksLogs() {
+        return tasksLogs;
     }
 
-    public void setTasksLog(ArrayList<Task> tasksLog) {
-        this.tasksLog = tasksLog;
+    public void setTasksLogs(ArrayList<TaskLog> tasksLogs) {
+        this.tasksLogs = tasksLogs;
+    }
+
+    public JSONObject ToJSONObject(Boolean extendedInfo)
+    {
+        JSONObject obj=new JSONObject();
+        obj.put("id",id);
+        obj.put("specialization",specialization.toString());
+
+        if(project!=null)
+            obj.put("project",project.getId());
+        else
+            obj.put("project","null");
+
+        if(task!=null)
+            obj.put("task",task.getId());
+        else
+            obj.put("task","null");
+
+
+        if(extendedInfo && tasksLogs!=null)
+        {
+            ArrayList<JSONObject> taskLogsJSON=new ArrayList<JSONObject>();
+            for(TaskLog taskLog:tasksLogs)
+                taskLogsJSON.add(taskLog.ToJSONObject());
+        }
+
+        return obj;
+
     }
 }

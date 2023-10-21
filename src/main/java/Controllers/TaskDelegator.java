@@ -33,7 +33,7 @@ public class TaskDelegator {
             tasks.add(new ArrayList<Task>());
 
         for(Task task:project.getTasks()) {
-            if (task.getAssignedTo() == "none") {
+            if (task.getAssignedTo() == null) {
                 switch (task.getSpecialization()) {
                     case FRONTEND:
                         tasks.get(0).add(task);
@@ -64,7 +64,7 @@ public class TaskDelegator {
             developers.add(new ArrayList<Developer>());
 
         for(Developer developer:project.getProjectDevelopers()) {
-            if (developer.getTaskId() == "none") {
+            if (developer.getTask() == null) {
                 switch (developer.getSpecialization()) {
                     case FRONTEND:
                         developers.get(0).add(developer);

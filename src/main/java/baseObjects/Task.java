@@ -2,45 +2,86 @@ package baseObjects;
 
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
+import org.json.JSONObject;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Entity
+@Table(name="tasks")
 public class Task {
-    private String _id;
-    private String projectId;
+    @Id
+    @Column(name = "id")
+    private long id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "project_id")
+    private Project project;
+    @Column(name="createdAt")
     private LocalDateTime createdAt;
-    private String createdBy;
+    @Column(name="createdBy")
+    private long createdBy;
+    @Enumerated(EnumType.STRING)
+    @Column(name="taskState")
     private TaskState taskState;
+    @Column(name="name")
     private String name;
+    @Column(name="estimation")
     private int estimation;
+    @Enumerated(EnumType.STRING)
+    @Column(name="specialization")
     private Specialization specialization;
-    private String assignedTo;
+    @OneToOne
+    @JoinColumn(name="developer_id")
+    private Developer assignedTo;
 
-    public Task(String _id, String projectId, LocalDateTime createdAt, String createdBy, String name, int estimation, Specialization specialization) {
-        this._id = _id;
-        this.projectId = projectId;
+    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, String name, int estimation, Specialization specialization) {
+        this.id = id;
+        this.project = project;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
-        this.taskState = TaskState.DEFAULT;
         this.name = name;
         this.estimation = estimation;
         this.specialization = specialization;
+        this.taskState=TaskState.DEFAULT;
     }
 
-    public String get_id() {
-        return _id;
+    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
+        this.id = id;
+        this.project = project;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.taskState=TaskState.DEFAULT;
+        this.name = name;
+        this.estimation = estimation;
+        this.specialization = specialization;
+        this.assignedTo = assignedTo;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
+        this.id = id;
+        this.project = project;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.taskState = taskState;
+        this.name = name;
+        this.estimation = estimation;
+        this.specialization = specialization;
+        this.assignedTo = assignedTo;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public long getId() {
+        return id;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -51,11 +92,11 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    public String getCreatedBy() {
+    public long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -91,11 +132,27 @@ public class Task {
         this.specialization = specialization;
     }
 
-    public String getAssignedTo() {
+    public Developer getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(String assignedTo) {
+    public void setAssignedTo(Developer assignedTo) {
         this.assignedTo = assignedTo;
+    }
+
+
+    public JSONObject ToJSONObject()
+    {
+        JSONObject obj=new JSONObject();
+        obj.put("id",id);
+        obj.put("project_id",project.getId());
+        obj.put("createdAt",createdAt.toString());
+        obj.put("createdBy",createdBy);
+        obj.put("name",name);
+        obj.put("taskState",taskState);
+        obj.put("specialization",specialization.toString());
+        obj.put("estimation",estimation);
+        obj.put("assignedTo",assignedTo.getId());
+        return obj;
     }
 }

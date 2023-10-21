@@ -16,7 +16,7 @@ public class ControllerIO {
     public static void activateGets(String[] args,ControllerDB controllerDB)
     {
         get("/project/:projectId", (request, response) -> {
-            String projectId=request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1);
+            long projectId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1));
             String obj=controllerDB.findProjectById(projectId);
             if(obj!=null) {
                 response.status(200);
@@ -30,8 +30,8 @@ public class ControllerIO {
         });
 
         get("/project/:projectId/task/:taskId",(request, response) -> {
-            String taskId=request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1);
-            String projectId=request.pathInfo().substring(10,19);
+            long taskId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf("/")+1));
+            long projectId= Long.parseLong(request.pathInfo().substring(10,19));
             String obj=controllerDB.findTaskById(projectId ,taskId);
             if(obj!=null) {
                 response.status(200);
@@ -44,10 +44,10 @@ public class ControllerIO {
             }
         });
 
-        get("/project/user",(req,res) -> {
+      /*  get("/project/user",(req,res) -> {
             res.status(200);
             return req.pathInfo();
-        });
+        });*/
     }
 
     public static void activatePosts(String[] args,ControllerDB controllerDB)
@@ -69,7 +69,7 @@ public class ControllerIO {
 
         post("/project/:projectId/task", (request, response) ->{
             String stringJson= request.body();
-            String projectId=request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1,request.pathInfo().lastIndexOf("/"));
+            long projectId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1,request.pathInfo().lastIndexOf("/")));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 if(!controllerDB.createNewTask(jsonObject,projectId))
@@ -86,7 +86,7 @@ public class ControllerIO {
 
         });
 
-        post("/project/user", (request, response) -> {
+        post("/user", (request, response) -> {
             String stringJson= request.body();
 
             try {
@@ -94,7 +94,7 @@ public class ControllerIO {
                 controllerDB.createNewDeveloper(jsonObject);
                 response.status(200);
                 return "Created developerId: " + jsonObject.get("id");
-            }catch (JSONException err){
+            }catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
             }
@@ -107,8 +107,8 @@ public class ControllerIO {
     {
         put("/project/:projectId/task/:taskId", (request, response) ->{
             String stringJson= request.body();
-            String taskId=request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1);
-            String projectId=request.pathInfo().substring(10,19);
+            long taskId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf("/")+1));
+            long projectId= Long.parseLong(request.pathInfo().substring(10,19));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 if(!controllerDB.EditNewTask(projectId,taskId,jsonObject))
