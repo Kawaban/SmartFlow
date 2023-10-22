@@ -72,14 +72,10 @@ public class ControllerIO {
             long projectId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1,request.pathInfo().lastIndexOf("/")));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
-                if(!controllerDB.createNewTask(jsonObject,projectId))
-                {
-                    response.status(404);
-                    return "Error: Object was not found";
-                }
+                controllerDB.createNewTask(jsonObject,projectId);
                 response.status(200);
                 return "Created taskId: " + jsonObject.get("_id")+", added to a project: "+projectId;
-            }catch (JSONException err){
+            }catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
             }
@@ -111,11 +107,7 @@ public class ControllerIO {
             long projectId= Long.parseLong(request.pathInfo().substring(10,19));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
-                if(!controllerDB.EditNewTask(projectId,taskId,jsonObject))
-                {
-                    response.status(404);
-                    return "Error: Object was not found";
-                }
+                controllerDB.EditNewTask(projectId,taskId,jsonObject);
                 response.status(200);
                 return "Created developerId: " + jsonObject.get("id");
             }catch (JSONException err){
