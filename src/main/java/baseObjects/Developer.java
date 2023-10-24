@@ -1,6 +1,9 @@
 package baseObjects;
 
+import additionalObjects.Rank;
 import additionalObjects.Specialization;
+import additionalObjects.TaskState;
+import additionalObjects.Unit;
 import org.json.JSONObject;
 
 
@@ -8,7 +11,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 @Entity
 @Table(name="developers")
-public class Developer {
+public class Developer implements Unit {
     @Id
     @Column(name="id")
     private long id;
@@ -109,5 +112,18 @@ public class Developer {
 
         return obj;
 
+    }
+
+    public ArrayList<Rank> calculateRanks()
+    {
+        ArrayList<Rank> ranks=new ArrayList<Rank>();
+        for(TaskLog taskLog:tasksLogs)
+        {
+            if(taskLog.getTaskState()!= TaskState.SKIPPED) {
+                int i = ranks.indexOf(new Rank(taskLog.getEstimation(), 0,null));
+                ranks.get(i).updateRank(taskLog.calculateRank());
+            }
+        }
+        return ranks;
     }
 }

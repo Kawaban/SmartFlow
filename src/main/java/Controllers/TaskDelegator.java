@@ -1,28 +1,39 @@
 package Controllers;
 
+import additionalObjects.Rank;
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
+import additionalObjects.Unit;
+import algorithm.Algorithm;
 import baseObjects.Developer;
 import baseObjects.Project;
 import baseObjects.Task;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 
 public class TaskDelegator {
-    public static void delegateTasks(Project project)
+    protected Algorithm algorithm;
+
+    public TaskDelegator(Algorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public  void delegateTasks(Project project)
     {
+        ArrayList<Unit> updateInstances=new ArrayList<Unit>();
 
         ArrayList<ArrayList<Task>> tasks = sortTasksBySpecialization(project);
         ArrayList<ArrayList<Developer>> developers = sortDevelopersBySpecialization(project);
 
         for(int i=0;i<Specialization.values().length;i++)
-            delegate(tasks.get(i),developers.get(i));
+            updateInstances.addAll(delegate(tasks.get(i),developers.get(i)));
 
     }
 
-    private static ArrayList<ArrayList<Task>> sortTasksBySpecialization(Project project)
+    private  ArrayList<ArrayList<Task>> sortTasksBySpecialization(Project project)
     {
         ///0 FRONTEND
         ///1 BACKEND
@@ -53,7 +64,7 @@ public class TaskDelegator {
         return tasks;
     }
 
-    private static ArrayList<ArrayList<Developer>> sortDevelopersBySpecialization(Project project)
+    private  ArrayList<ArrayList<Developer>> sortDevelopersBySpecialization(Project project)
     {
         ///0 FRONTEND
         ///1 BACKEND
@@ -84,10 +95,9 @@ public class TaskDelegator {
         return developers;
     }
 
-    private static void delegate(ArrayList<Task> tasks, ArrayList<Developer> developers)
+    private  ArrayList<Unit> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers)
     {
         Map<Integer,ArrayList<Task>> taskMap=new HashMap<Integer,ArrayList<Task>>();
-        Map<Integer, Queue<Developer>> developerMap=new HashMap<Integer, Queue<Developer>>();
         for(Task task:tasks) {
             if (taskMap.get(task.getEstimation()) == null) {
                 taskMap.put(task.getEstimation(), new ArrayList<Task>());
@@ -95,9 +105,13 @@ public class TaskDelegator {
             taskMap.get(task.getEstimation()).add(task);
         }
 
+        ArrayList<ArrayList<Rank>> developersRanks=new ArrayList<ArrayList<Rank>>();
+        for(Developer developer:developers)
+            developersRanks.add(developer.calculateRanks());
 
+        ArrayList<Unit> updateInstances=algorithm.delegate(taskMap,developersRanks);
 
-
+        return updateInstances;
     }
 
 

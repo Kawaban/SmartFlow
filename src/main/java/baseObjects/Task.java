@@ -2,13 +2,14 @@ package baseObjects;
 
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
+import additionalObjects.Unit;
 import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 @Entity
 @Table(name="tasks")
-public class Task {
+public class Task implements Unit {
     @Id
     @Column(name = "id")
     private long id;
@@ -17,6 +18,9 @@ public class Task {
     private Project project;
     @Column(name="createdAt")
     private LocalDateTime createdAt;
+
+    @Column(name="deadline")
+    private LocalDateTime deadline;
     @Column(name="createdBy")
     private long createdBy;
     @Enumerated(EnumType.STRING)
@@ -33,7 +37,7 @@ public class Task {
     @JoinColumn(name="developer_id")
     private Developer assignedTo;
 
-    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, String name, int estimation, Specialization specialization) {
+    public Task(long id, Project project, LocalDateTime createdAt,LocalDateTime deadline, long createdBy, String name, int estimation, Specialization specialization) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -42,9 +46,10 @@ public class Task {
         this.estimation = estimation;
         this.specialization = specialization;
         this.taskState=TaskState.DEFAULT;
+        this.deadline=deadline;
     }
 
-    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project, LocalDateTime createdAt,LocalDateTime deadline, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -54,9 +59,10 @@ public class Task {
         this.estimation = estimation;
         this.specialization = specialization;
         this.assignedTo = assignedTo;
+        this.deadline=deadline;
     }
 
-    public Task(long id, Project project, LocalDateTime createdAt, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project,  LocalDateTime createdAt,LocalDateTime deadline, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -66,6 +72,7 @@ public class Task {
         this.estimation = estimation;
         this.specialization = specialization;
         this.assignedTo = assignedTo;
+        this.deadline=deadline;
     }
 
     public long getId() {
@@ -153,6 +160,7 @@ public class Task {
         obj.put("specialization",specialization.toString());
         obj.put("estimation",estimation);
         obj.put("assignedTo",assignedTo.getId());
+        obj.put("deadline",deadline.toString());
         return obj;
     }
 }

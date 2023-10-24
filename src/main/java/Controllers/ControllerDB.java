@@ -186,11 +186,23 @@ public class ControllerDB {
             throw new RuntimeException("Wrong createdAt Date");
         }
 
+
+        String deadlineStr=taskJSON.getString("deadline");
+        LocalDateTime deadline;
+        try {
+            deadline = LocalDateTime.parse(deadlineStr);
+        }
+        catch (RuntimeException e)
+        {
+            session.getTransaction().commit();
+            throw new RuntimeException("Wrong deadline Date");
+        }
+
         Task task;
         if(developer==null)
-            task=new Task(taskId,project,createdAt,creatorId,name,estimation,taskSpec);
+            task=new Task(taskId,project,createdAt,deadline,creatorId,name,estimation,taskSpec);
         else {
-            task = new Task(taskId, project, createdAt, creatorId, name, estimation, taskSpec, developer);
+            task = new Task(taskId, project, createdAt,deadline, creatorId, name, estimation, taskSpec, developer);
             developer.setTask(task);
             session.update(developer);
         }
