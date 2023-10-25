@@ -30,11 +30,8 @@ public class AlgorithmGreedy implements Algorithm {
                 {
                     if(taskMap.containsKey(rank.getEstimation()) && !taskMap.get(rank.getEstimation()).isEmpty())
                     {
-                        taskMap.get(rank.getEstimation()).get(0).setTaskState(TaskState.ASSIGNED);
-                        taskMap.get(rank.getEstimation()).get(0).setAssignedTo(rank.getDeveloper());
-                        rank.getDeveloper().setTask(taskMap.get(rank.getEstimation()).get(0));
                         //save instances is needed
-                        updateInstances.add(new Assignment(rank.getDeveloper().getId(),taskMap.get(rank.getEstimation()).get(0).getId()));
+                        updateInstances.add(new Assignment(rank.getDeveloperID(),taskMap.get(rank.getEstimation()).get(0).getId()));
                         //
                         taskMap.get(rank.getEstimation()).remove(0);
                     }

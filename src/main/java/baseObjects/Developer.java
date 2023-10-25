@@ -119,8 +119,15 @@ public class Developer  {
         for(TaskLog taskLog:tasksLogs)
         {
             if(taskLog.getTaskState()!= TaskState.SKIPPED) {
-                int i = ranks.indexOf(new Rank(taskLog.getEstimation(), 0,null));
-                ranks.get(i).updateRank(taskLog.calculateRank());
+
+                int i = ranks.indexOf(new Rank(taskLog.getEstimation(), 0,0));
+                if(i!=-1) {
+                    ranks.get(i).updateRank(taskLog.calculateRank());
+                }
+                else {
+                    Rank rank=new Rank(taskLog.getEstimation(),0,id);
+                    ranks.add(rank);
+                }
             }
         }
         return ranks;

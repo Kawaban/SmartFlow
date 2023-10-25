@@ -146,6 +146,13 @@ public class Task  {
         this.assignedTo = assignedTo;
     }
 
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
 
     public JSONObject ToJSONObject()
     {

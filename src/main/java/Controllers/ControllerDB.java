@@ -228,6 +228,8 @@ public class ControllerDB {
         TaskState taskState;
         try {
             taskState = TaskState.valueOf(taskStateStr);
+            if(taskState==TaskState.FAILED || taskState==TaskState.COMPLETED || taskState==TaskState.SKIPPED)
+                createTaskLog(task,task.getAssignedTo(),session,taskState);
         }
         catch (RuntimeException e)
         {
@@ -237,6 +239,12 @@ public class ControllerDB {
         task.setTaskState(taskState);
         session.update(task);
         session.getTransaction().commit();
+    }
+
+    public void createTaskLog(Task task,Developer developer,Session session,TaskState taskState)
+    {
+        TaskLog taskLog=new TaskLog(task.getId(),developer.getProject().getId(),developer,task.getDeadline(),LocalDateTime.now(),task.getCreatedAt(),taskState,task.getEstimation());
+        session.save(taskLog);
     }
 
 
@@ -362,6 +370,9 @@ public class ControllerDB {
             throw new RuntimeException("Error wrong decision input");
         }
     }
+
+
+
 
 
 

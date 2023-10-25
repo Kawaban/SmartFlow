@@ -8,7 +8,7 @@ public class Rank {
     private double value;
     private int power;
 
-    private Developer developer;
+    private long developerID;
 
     @Override
     public boolean equals(Object obj) {
@@ -16,11 +16,11 @@ public class Rank {
         return other.getEstimation()==estimation;
     }
 
-    public Rank(int estimation, double value,Developer developer) {
+    public Rank(int estimation, double value,long developerID) {
         this.estimation = estimation;
         this.value = value;
         int power=1;
-        this.developer=developer;
+        this.developerID=developerID;
     }
 
     public void updateRank(double addedValue)
@@ -53,11 +53,11 @@ public class Rank {
         this.power = power;
     }
 
-    public Developer getDeveloper() {
-        return developer;
+    public long getDeveloperID() {
+        return developerID;
     }
 
-    public void setDeveloper(Developer developer) {
-        this.developer = developer;
+    public void setDeveloperID(long developerID) {
+        this.developerID = developerID;
     }
 }
