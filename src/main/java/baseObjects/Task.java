@@ -2,18 +2,17 @@ package baseObjects;
 
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
-import additionalObjects.Unit;
 import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 @Entity
 @Table(name="tasks")
-public class Task implements Unit {
+public class Task  {
     @Id
     @Column(name = "id")
     private long id;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
     @Column(name="createdAt")

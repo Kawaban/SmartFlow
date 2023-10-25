@@ -3,7 +3,6 @@ package baseObjects;
 import additionalObjects.Rank;
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
-import additionalObjects.Unit;
 import org.json.JSONObject;
 
 
@@ -11,11 +10,11 @@ import javax.persistence.*;
 import java.util.ArrayList;
 @Entity
 @Table(name="developers")
-public class Developer implements Unit {
+public class Developer  {
     @Id
     @Column(name="id")
     private long id;
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="project_id")
     private Project project;
     @OneToOne
@@ -25,7 +24,7 @@ public class Developer implements Unit {
     @Column(name="specialization")
     private Specialization specialization;
 
-    @OneToMany(mappedBy = "developer",fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "developer",fetch=FetchType.LAZY)
     private ArrayList<TaskLog> tasksLogs;
 
     public Developer(long id, Specialization specialization) {

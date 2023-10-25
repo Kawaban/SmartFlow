@@ -12,9 +12,9 @@ public class Project {
     private long id;
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "project",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
     ArrayList<Developer> projectDevelopers;
-    @OneToMany(mappedBy = "project",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
     ArrayList<Task> tasks;
 
     public Project(long id, String name, ArrayList<Developer> projectDevelopers) {

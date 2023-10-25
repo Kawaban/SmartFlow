@@ -2,11 +2,10 @@ package algorithm;
 
 import additionalObjects.Rank;
 import additionalObjects.TaskState;
-import additionalObjects.Unit;
+import baseObjects.Assignment;
 import baseObjects.Task;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
 
 public class AlgorithmGreedy implements Algorithm {
@@ -22,8 +21,8 @@ public class AlgorithmGreedy implements Algorithm {
         }
     }
     @Override
-    public ArrayList<Unit> delegate(Map<Integer, ArrayList<Task>> taskMap, ArrayList<ArrayList<Rank>> developersRanks) {
-            ArrayList<Unit> updateInstances=new ArrayList<Unit>();
+    public ArrayList<Assignment> delegate(Map<Integer, ArrayList<Task>> taskMap, ArrayList<ArrayList<Rank>> developersRanks) {
+            ArrayList<Assignment> updateInstances=new ArrayList<Assignment>();
             for(ArrayList<Rank> ranks:developersRanks)
             {
                 ranks.sort(new Comparator());
@@ -35,8 +34,7 @@ public class AlgorithmGreedy implements Algorithm {
                         taskMap.get(rank.getEstimation()).get(0).setAssignedTo(rank.getDeveloper());
                         rank.getDeveloper().setTask(taskMap.get(rank.getEstimation()).get(0));
                         //save instances is needed
-                        updateInstances.add(taskMap.get(rank.getEstimation()).get(0));
-                        updateInstances.add(rank.getDeveloper());
+                        updateInstances.add(new Assignment(rank.getDeveloper().getId(),taskMap.get(rank.getEstimation()).get(0).getId()));
                         //
                         taskMap.get(rank.getEstimation()).remove(0);
                     }

@@ -3,18 +3,14 @@ package Controllers;
 import additionalObjects.FibonacciChecker;
 import additionalObjects.Specialization;
 import additionalObjects.TaskState;
-import baseObjects.Developer;
-import baseObjects.Project;
-import baseObjects.Task;
-import baseObjects.TaskLog;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import algorithm.AlgorithmGreedy;
+import baseObjects.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +24,7 @@ public class ControllerDB {
                 .addAnnotatedClass(Project.class)
                 .addAnnotatedClass(Task.class)
                 .addAnnotatedClass(TaskLog.class)
+                .addAnnotatedClass(Assignment.class)
                 .buildSessionFactory();
         this.sessionFactory=sessionFactory;
     }
@@ -243,11 +240,6 @@ public class ControllerDB {
     }
 
 
-
-
-
-
-
     public Boolean checkTaskId(long taskId)
     {
         Session session=sessionFactory.getCurrentSession();
@@ -292,6 +284,83 @@ public class ControllerDB {
             }
         session.getTransaction().commit();
         return false;
+    }
+
+
+
+    public JSONArray delegateTasks(long projectId,JSONObject assignmentJSON)
+    {
+        int assignmentInt= (int) assignmentJSON.opt("id");
+        long assignmentID= assignmentInt;
+
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
+                .getSingleResult();
+        if(project==null)
+        {
+            session.getTransaction().commit();
+            throw new RuntimeException("Error, wrong project id");
+        }
+
+        TaskDelegator taskDelegator=new TaskDelegator(new AlgorithmGreedy());
+        ArrayList<Assignment> updateInstances=taskDelegator.delegateTasks(project);
+
+        JSONArray assignmentsJSONArray=new JSONArray();
+        ArrayList<JSONObject> objects=new ArrayList<JSONObject>();
+
+       for (Assignment assignment:updateInstances)
+       {
+           assignment.setId(assignmentID);
+           assignment.setProjectId(projectId);
+           session.save(assignment);
+           JSONObject object=assignment.ToJSONObject();
+           objects.add(object);
+       }
+        assignmentsJSONArray.put(objects);
+        session.getTransaction().commit();
+        return assignmentsJSONArray;
+    }
+
+    public void decideDelegationOfTasks(long assignmentId,long projectId, JSONObject decision)
+    {
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        List<Assignment> assignments=session.createQuery("SELECT i FROM Assignment i WHERE i.id="+assignmentId,Assignment.class)
+            .getResultList();
+
+        if(assignments.get(0).getProjectId()!=projectId)
+            throw new RuntimeException("Error wrong project id");
+
+        if(decision.optString("decision_Y/N")=="Y")
+        {
+            for(Assignment assignment:assignments)
+            {
+                Task task=session.createQuery("SELECT i FROM Task i WHERE i.id="+assignment.getTaskId(),Task.class)
+                        .getSingleResult();
+                Developer developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+assignment.getDeveloperId(),Developer.class)
+                        .getSingleResult();
+                developer.setTask(task);
+                task.setAssignedTo(developer);
+                task.setTaskState(TaskState.ASSIGNED);
+                session.update(developer);
+                session.update(task);
+                session.remove(assignment);
+            }
+            session.getTransaction().commit();
+        }
+        else if(decision.optString("decision_Y/N")=="N")
+        {
+            for(Assignment assignment:assignments)
+            {
+                session.remove(assignment);
+            }
+            session.getTransaction().commit();
+        }
+        else {
+            session.getTransaction().commit();
+            throw new RuntimeException("Error wrong decision input");
+        }
     }
 
 

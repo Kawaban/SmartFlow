@@ -1,5 +1,6 @@
 package Controllers;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +17,7 @@ public class ControllerIO {
     public static void activateGets(String[] args,ControllerDB controllerDB)
     {
         get("/project/:projectId", (request, response) -> {
-            long projectId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1));
+            long projectId= Long.parseLong(request.params("projectId"));
             String obj=controllerDB.findProjectById(projectId);
             if(obj!=null) {
                 response.status(200);
@@ -30,8 +31,8 @@ public class ControllerIO {
         });
 
         get("/project/:projectId/task/:taskId",(request, response) -> {
-            long taskId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf("/")+1));
-            long projectId= Long.parseLong(request.pathInfo().substring(10,19));
+            long taskId= Long.parseLong(request.params("taskId"));
+            long projectId= Long.parseLong(request.params("projectId"));
             String obj=controllerDB.findTaskById(projectId ,taskId);
             if(obj!=null) {
                 response.status(200);
@@ -69,7 +70,7 @@ public class ControllerIO {
 
         post("/project/:projectId/task", (request, response) ->{
             String stringJson= request.body();
-            long projectId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf(":")+1,request.pathInfo().lastIndexOf("/")));
+            long projectId= Long.parseLong(request.params("projectId"));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.createNewTask(jsonObject,projectId);
@@ -96,21 +97,49 @@ public class ControllerIO {
             }
         });
 
-
+        post("project/:projectId/assignment",(request, response) -> {
+            String stringJson= request.body();
+            long projectId= Long.parseLong(request.params("projectId"));
+            try {
+                JSONObject jsonObject = new JSONObject(stringJson);
+                JSONArray array=controllerDB.delegateTasks(projectId,jsonObject);
+                response.status(200);
+                return array.toString();
+            }
+            catch (RuntimeException err){
+                response.status(400);
+                return "Error" + " " + err.toString();
+            }
+        });
     }
 
     public static void activatePuts(String[] args,ControllerDB controllerDB)
     {
         put("/project/:projectId/task/:taskId", (request, response) ->{
             String stringJson= request.body();
-            long taskId= Long.parseLong(request.pathInfo().substring(request.pathInfo().lastIndexOf("/")+1));
-            long projectId= Long.parseLong(request.pathInfo().substring(10,19));
+            long taskId= Long.parseLong(request.params("taskId"));
+            long projectId= Long.parseLong(request.params("projectId"));
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.EditNewTask(projectId,taskId,jsonObject);
                 response.status(200);
                 return "Created developerId: " + jsonObject.get("id");
             }catch (JSONException err){
+                response.status(400);
+                return "Error" + " " + err.toString();
+            }
+        });
+
+        put("project/:projectId/assignment/:assignmentId",(request, response) -> {
+            String stringJson= request.body();
+            long projectId= Long.parseLong(request.params("projectId"));
+            long assignmentId= Long.parseLong(request.params("assignmentId"));
+            try{
+                JSONObject jsonObject = new JSONObject(stringJson);
+                controllerDB.decideDelegationOfTasks(assignmentId,projectId,jsonObject);
+                response.status(200);
+                return "Assignment is complete";
+            } catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
             }

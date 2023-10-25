@@ -16,7 +16,7 @@ public class TaskLog {
     private long id;
     @Column(name="projectId")
     private long projectId;
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="developer_id")
     private Developer developer;
     @Column(name = "deadline")
@@ -30,10 +30,15 @@ public class TaskLog {
     private TaskState taskState;
     @Column(name = "estimation")
     private int estimation;
-
+    @Transient
     private final static double CONST_RANK_FAILED=0;
+    @Transient
     private final static double CONST_RANK_COMPLETE_HIGH=5.5;
-    private final static double CONST_RANK_COMPLETE_LOW=1.0;
+    @Transient
+    private final static double CONST_RANK_COMPLETE_LOW=2.0;
+
+    @Transient
+    private final static double CONST_RANK_COMPLETE_EXPIRED=1.0;
 
     public TaskLog(long id, long projectId, Developer developer, LocalDateTime deadline, LocalDateTime endAt, LocalDateTime createdAt, TaskState taskState, int estimation) {
         this.id = id;
@@ -130,6 +135,9 @@ public class TaskLog {
             return CONST_RANK_FAILED;
 
         long deltaTime= ChronoUnit.DAYS.between(endAt,deadline);
+        if(deltaTime<0)
+            return CONST_RANK_COMPLETE_EXPIRED;
+
         long taskTime=ChronoUnit.DAYS.between(createdAt,deadline);
         double percent=deltaTime/taskTime;
         return CONST_RANK_COMPLETE_HIGH - percent*(CONST_RANK_COMPLETE_HIGH-CONST_RANK_COMPLETE_LOW);

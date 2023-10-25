@@ -2,15 +2,11 @@ package Controllers;
 
 import additionalObjects.Rank;
 import additionalObjects.Specialization;
-import additionalObjects.TaskState;
-import additionalObjects.Unit;
 import algorithm.Algorithm;
+import baseObjects.Assignment;
 import baseObjects.Developer;
 import baseObjects.Project;
 import baseObjects.Task;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
 
@@ -21,9 +17,9 @@ public class TaskDelegator {
         this.algorithm = algorithm;
     }
 
-    public  void delegateTasks(Project project)
+    public  ArrayList<Assignment> delegateTasks(Project project)
     {
-        ArrayList<Unit> updateInstances=new ArrayList<Unit>();
+        ArrayList<Assignment> updateInstances=new ArrayList<Assignment>();
 
         ArrayList<ArrayList<Task>> tasks = sortTasksBySpecialization(project);
         ArrayList<ArrayList<Developer>> developers = sortDevelopersBySpecialization(project);
@@ -31,6 +27,7 @@ public class TaskDelegator {
         for(int i=0;i<Specialization.values().length;i++)
             updateInstances.addAll(delegate(tasks.get(i),developers.get(i)));
 
+        return updateInstances;
     }
 
     private  ArrayList<ArrayList<Task>> sortTasksBySpecialization(Project project)
@@ -95,7 +92,7 @@ public class TaskDelegator {
         return developers;
     }
 
-    private  ArrayList<Unit> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers)
+    private  ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers)
     {
         Map<Integer,ArrayList<Task>> taskMap=new HashMap<Integer,ArrayList<Task>>();
         for(Task task:tasks) {
@@ -109,7 +106,7 @@ public class TaskDelegator {
         for(Developer developer:developers)
             developersRanks.add(developer.calculateRanks());
 
-        ArrayList<Unit> updateInstances=algorithm.delegate(taskMap,developersRanks);
+        ArrayList<Assignment> updateInstances=algorithm.delegate(taskMap,developersRanks);
 
         return updateInstances;
     }
