@@ -3,13 +3,13 @@ package algorithm;
 import additionalObjects.Rank;
 import additionalObjects.TaskState;
 import baseObjects.Assignment;
+import baseObjects.Developer;
 import baseObjects.Task;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class AlgorithmGreedy implements Algorithm {
-
     class Comparator implements java.util.Comparator<Rank>{
 
         @Override
@@ -21,22 +21,31 @@ public class AlgorithmGreedy implements Algorithm {
         }
     }
     @Override
-    public ArrayList<Assignment> delegate(Map<Integer, ArrayList<Task>> taskMap, ArrayList<ArrayList<Rank>> developersRanks) {
-            ArrayList<Assignment> updateInstances=new ArrayList<Assignment>();
-            for(ArrayList<Rank> ranks:developersRanks)
+    public ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers) {
+        ArrayList<Assignment> assignments=new ArrayList<Assignment>();
+        for(Task task:tasks)
+        {
+            Rank maxRank=null;
+            int pos=-1;
+            for(int i=0;i<developers.size();i++)
             {
-                ranks.sort(new Comparator());
-                for(Rank rank:ranks)
+                Rank temp=developers.get(i).calculateRank(task.getEstimation());
+                if(maxRank==null || temp.getValue()>maxRank.getValue())
                 {
-                    if(taskMap.containsKey(rank.getEstimation()) && !taskMap.get(rank.getEstimation()).isEmpty())
-                    {
-                        //save instances is needed
-                        updateInstances.add(new Assignment(rank.getDeveloperID(),taskMap.get(rank.getEstimation()).get(0).getId()));
-                        //
-                        taskMap.get(rank.getEstimation()).remove(0);
-                    }
+                    maxRank=temp;
+                    pos=i;
                 }
             }
-            return updateInstances;
+            if(maxRank!=null)
+            {
+                assignments.add(new Assignment(maxRank.getDeveloperID(),task.getId()));
+                developers.remove(pos);
+            }
+
+        }
+        return assignments;
     }
+
+
+
 }

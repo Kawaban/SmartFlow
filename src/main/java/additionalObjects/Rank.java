@@ -10,6 +10,8 @@ public class Rank {
 
     private long developerID;
 
+    private final static double CONST_DEFAULT_RANK=3.0;
+
     @Override
     public boolean equals(Object obj) {
         Rank other= (Rank) obj;
@@ -19,8 +21,20 @@ public class Rank {
     public Rank(int estimation, double value,long developerID) {
         this.estimation = estimation;
         this.value = value;
-        int power=1;
+        this.power=1;
         this.developerID=developerID;
+    }
+    public Rank(int estimation,long developerID) {
+        this.estimation = estimation;
+        this.value = 0;
+        this.power=0;
+        this.developerID=developerID;
+    }
+
+    public void setDefaultRank()
+    {
+        this.value=CONST_DEFAULT_RANK;
+        this.power=1;
     }
 
     public void updateRank(double addedValue)

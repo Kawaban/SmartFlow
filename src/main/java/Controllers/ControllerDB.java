@@ -11,6 +11,7 @@ import org.hibernate.cfg.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +72,8 @@ public class ControllerDB {
     {
         int projectIntID= (int) projectJSON.opt("id");
         long projectId= projectIntID;
-        if(checkProjectId(projectId))
-            throw new RuntimeException("Error, project with this id already exists");
+      /*  if(checkProjectId(projectId))
+            throw new RuntimeException("Error, project with this id already exists");*/
         String projectName= (String) projectJSON.opt("name");
 
         JSONArray developersJSON=projectJSON.optJSONArray("developers");
@@ -80,7 +81,7 @@ public class ControllerDB {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
         for(int i=0;i<developersJSON.length();i++) {
-            int developerIntID= (int) projectJSON.opt("id");
+            int developerIntID= (int) developersJSON.opt(i);
             long developerId= developerIntID;
             Developer developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class)
                     .getSingleResult();
@@ -88,6 +89,11 @@ public class ControllerDB {
                 developers.add(developer);
         }
         Project project=new Project(projectId,projectName,developers);
+        for(Developer developer:developers)
+        {
+            developer.setProject(project);
+            session.update(developer);
+        }
         session.save(project);
         session.getTransaction().commit();
 
@@ -97,8 +103,8 @@ public class ControllerDB {
     {
         int developerIntID= (int) developerJSON.opt("id");
         long developerId= developerIntID;
-        if(checkDeveloperId(developerId))
-            throw new RuntimeException("Error, developer with this id already exists");
+       /* if(checkDeveloperId(developerId))
+            throw new RuntimeException("Error, developer with this id already exists");*/
         String developerSpecStr= (String) developerJSON.opt("specialization");
         Specialization developerSpec;
         try {
@@ -120,26 +126,20 @@ public class ControllerDB {
 
     public void createNewTask(JSONObject taskJSON, long projectId)
     {
-        Session session=sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
-                .getSingleResult();
 
-        if(project==null) {
-            session.getTransaction().commit();
-            throw new RuntimeException("Error, wrong project id");
-        }
+
+
 
         int taskIntID= (int) taskJSON.opt("id");
         long taskId= taskIntID;
         if(checkTaskId(taskId)) {
-            session.getTransaction().commit();
+           /* session.getTransaction().commit();*/
             throw new RuntimeException("Error, task with this id already exists");
         }
 
         String name=taskJSON.optString("name");
 
-        int creatorIntID= (int) taskJSON.opt("createdAt");
+        int creatorIntID= (int) taskJSON.opt("createdBy");
         long creatorId= creatorIntID;
 
         String taskSpecStr= (String) taskJSON.opt("specialization");
@@ -149,14 +149,23 @@ public class ControllerDB {
         }
         catch (RuntimeException e)
         {
-            session.getTransaction().commit();
+            /*session.getTransaction().commit();*/
             throw new RuntimeException("Error, wrong specialization");
         }
 
         int estimation=(int) taskJSON.opt("estimation");
         if(!FibonacciChecker.isFibonacci(estimation)) {
-            session.getTransaction().commit();
+          /*  session.getTransaction().commit();*/
             throw new RuntimeException("estimation is not fibonacci number");
+        }
+
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
+                .getSingleResult();
+        if(project==null) {
+            /*session.getTransaction().commit();*/
+            throw new RuntimeException("Error, wrong project id");
         }
 
         Integer developerIntID= (Integer) taskJSON.opt("assignedTo");
@@ -167,31 +176,31 @@ public class ControllerDB {
             developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class)
                     .getSingleResult();
             if(developer==null) {
-                session.getTransaction().commit();
+               /* session.getTransaction().commit();*/
                 throw new RuntimeException("wrong developer id");
             }
         }
 
         String createdAtStr=taskJSON.getString("createdAt");
-        LocalDateTime createdAt;
+        LocalDate createdAt;
         try {
-             createdAt = LocalDateTime.parse(createdAtStr);
+             createdAt = LocalDate.parse(createdAtStr);
         }
         catch (RuntimeException e)
         {
-            session.getTransaction().commit();
+           /* session.getTransaction().commit();*/
             throw new RuntimeException("Wrong createdAt Date");
         }
 
 
         String deadlineStr=taskJSON.getString("deadline");
-        LocalDateTime deadline;
+        LocalDate deadline;
         try {
-            deadline = LocalDateTime.parse(deadlineStr);
+            deadline = LocalDate.parse(deadlineStr);
         }
         catch (RuntimeException e)
         {
-            session.getTransaction().commit();
+            /*session.getTransaction().commit();*/
             throw new RuntimeException("Wrong deadline Date");
         }
 
@@ -214,7 +223,7 @@ public class ControllerDB {
         session.beginTransaction();
         Task task=session.createQuery("SELECT i FROM Task i WHERE i.id="+taskId,Task.class)
                 .getSingleResult();
-        if(task!=null) {
+        if(task==null) {
             session.getTransaction().commit();
             throw new RuntimeException("Object wasn't found");
         }
@@ -243,7 +252,7 @@ public class ControllerDB {
 
     public void createTaskLog(Task task,Developer developer,Session session,TaskState taskState)
     {
-        TaskLog taskLog=new TaskLog(task.getId(),developer.getProject().getId(),developer,task.getDeadline(),LocalDateTime.now(),task.getCreatedAt(),taskState,task.getEstimation());
+        TaskLog taskLog=new TaskLog(task.getId(),developer.getProject().getId(),developer,task.getDeadline(), LocalDate.now(),task.getCreatedAt(),taskState,task.getEstimation());
         session.save(taskLog);
     }
 
@@ -268,7 +277,7 @@ public class ControllerDB {
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        List<Project> projects=session.createQuery("SELECT i FROM Project i",Project.class)
+        List<Project> projects=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
                 .getResultList();
         for(Project project:projects)
             if(project.getId()==projectId){

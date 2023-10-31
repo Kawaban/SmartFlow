@@ -17,14 +17,18 @@ public class ControllerIO {
     public static void activateGets(String[] args,ControllerDB controllerDB)
     {
         get("/project/:projectId", (request, response) -> {
-            long projectId= Long.parseLong(request.params("projectId"));
-            String obj=controllerDB.findProjectById(projectId);
-            if(obj!=null) {
+            long projectId = Long.parseLong(request.params("projectId"));
+            String obj;
+            try {
+                obj = controllerDB.findProjectById(projectId);
+            } catch (RuntimeException err) {
+                response.status(400);
+                return "Error" + " " + err.toString();
+            }
+            if (obj != null) {
                 response.status(200);
                 return obj;
-            }
-            else
-            {
+            } else {
                 response.status(404);
                 return "Error: Object was not found";
             }
@@ -61,8 +65,8 @@ public class ControllerIO {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.createNewProject(jsonObject);
                 response.status(200);
-                return "Created projectId: " + jsonObject.get("_id");
-            }catch (JSONException err){
+                return "Created projectId: " + jsonObject.get("id");
+            }catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
             }
@@ -75,7 +79,7 @@ public class ControllerIO {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.createNewTask(jsonObject,projectId);
                 response.status(200);
-                return "Created taskId: " + jsonObject.get("_id")+", added to a project: "+projectId;
+                return "Created taskId: " + jsonObject.get("id")+", added to a project: "+projectId;
             }catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
@@ -123,8 +127,8 @@ public class ControllerIO {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.EditNewTask(projectId,taskId,jsonObject);
                 response.status(200);
-                return "Created developerId: " + jsonObject.get("id");
-            }catch (JSONException err){
+                return "Status updated";
+            }catch (RuntimeException err){
                 response.status(400);
                 return "Error" + " " + err.toString();
             }

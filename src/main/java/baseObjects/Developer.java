@@ -8,6 +8,8 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="developers")
 public class Developer  {
@@ -25,7 +27,7 @@ public class Developer  {
     private Specialization specialization;
 
     @OneToMany(mappedBy = "developer",fetch=FetchType.LAZY)
-    private ArrayList<TaskLog> tasksLogs;
+    private List<TaskLog> tasksLogs;
 
     public Developer(long id, Specialization specialization) {
         this.id = id;
@@ -43,6 +45,9 @@ public class Developer  {
         this.project = project;
         this.task = task;
         this.specialization = specialization;
+    }
+
+    public Developer() {
     }
 
     public long getId() {
@@ -77,7 +82,7 @@ public class Developer  {
         this.specialization = specialization;
     }
 
-    public ArrayList<TaskLog> getTasksLogs() {
+    public List<TaskLog> getTasksLogs() {
         return tasksLogs;
     }
 
@@ -113,23 +118,16 @@ public class Developer  {
 
     }
 
-    public ArrayList<Rank> calculateRanks()
+    public Rank calculateRank(int estimation)
     {
-        ArrayList<Rank> ranks=new ArrayList<Rank>();
+        Rank rank=new Rank(estimation,id);
         for(TaskLog taskLog:tasksLogs)
         {
-            if(taskLog.getTaskState()!= TaskState.SKIPPED) {
-
-                int i = ranks.indexOf(new Rank(taskLog.getEstimation(), 0,0));
-                if(i!=-1) {
-                    ranks.get(i).updateRank(taskLog.calculateRank());
-                }
-                else {
-                    Rank rank=new Rank(taskLog.getEstimation(),0,id);
-                    ranks.add(rank);
-                }
-            }
+            if(taskLog.getEstimation()==estimation)
+                rank.updateRank(taskLog.calculateRank());
         }
-        return ranks;
+        if(rank.getPower()==0)
+            rank.setDefaultRank();
+        return rank;
     }
 }

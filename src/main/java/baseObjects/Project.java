@@ -4,6 +4,8 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="projects")
 public class Project {
@@ -13,14 +15,17 @@ public class Project {
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
-    ArrayList<Developer> projectDevelopers;
+    List<Developer> projectDevelopers;
     @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
-    ArrayList<Task> tasks;
+    List<Task> tasks;
 
     public Project(long id, String name, ArrayList<Developer> projectDevelopers) {
         this.id = id;
         this.name = name;
         this.projectDevelopers = projectDevelopers;
+    }
+
+    public Project() {
     }
 
     public long getId() {
@@ -39,7 +44,7 @@ public class Project {
         this.name = name;
     }
 
-    public ArrayList<Developer> getProjectDevelopers() {
+    public List<Developer> getProjectDevelopers() {
         return projectDevelopers;
     }
 
@@ -47,7 +52,7 @@ public class Project {
         this.projectDevelopers = projectDevelopers;
     }
 
-    public ArrayList<Task> getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
@@ -68,10 +73,11 @@ public class Project {
 
         obj.put("developers",developers);
         ArrayList<JSONObject> tasksJSON=new ArrayList<JSONObject>();
+        System.out.println(-1);
         if(tasks!=null)
             for(Task task:tasks)
                 tasksJSON.add(task.ToJSONObject());
-        obj.put("tasks",tasks);
+        obj.put("tasks",tasksJSON);
         return obj;
     }
 }

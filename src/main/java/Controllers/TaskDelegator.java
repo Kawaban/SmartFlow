@@ -94,19 +94,8 @@ public class TaskDelegator {
 
     private  ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers)
     {
-        Map<Integer,ArrayList<Task>> taskMap=new HashMap<Integer,ArrayList<Task>>();
-        for(Task task:tasks) {
-            if (taskMap.get(task.getEstimation()) == null) {
-                taskMap.put(task.getEstimation(), new ArrayList<Task>());
-            }
-            taskMap.get(task.getEstimation()).add(task);
-        }
 
-        ArrayList<ArrayList<Rank>> developersRanks=new ArrayList<ArrayList<Rank>>();
-        for(Developer developer:developers)
-            developersRanks.add(developer.calculateRanks());
-
-        ArrayList<Assignment> updateInstances=algorithm.delegate(taskMap,developersRanks);
+        ArrayList<Assignment> updateInstances=algorithm.delegate(tasks,developers);
 
         return updateInstances;
     }

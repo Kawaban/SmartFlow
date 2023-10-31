@@ -5,28 +5,29 @@ import additionalObjects.TaskState;
 import org.json.JSONObject;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name="taskLogs")
+@Table(name="tasklogs")
 public class TaskLog {
     @Id
     @Column(name="id")
     private long id;
-    @Column(name="projectId")
+    @Column(name="project_id")
     private long projectId;
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="developer_id")
     private Developer developer;
     @Column(name = "deadline")
-    private LocalDateTime deadline;
-    @Column(name = "endAt")
-    private LocalDateTime endAt;
-    @Column(name = "createdAt")
-    private LocalDateTime createdAt;
+    private LocalDate deadline;
+    @Column(name = "endat")
+    private LocalDate endAt;
+    @Column(name = "createdat")
+    private LocalDate createdAt;
     @Enumerated(EnumType.STRING)
-    @Column(name ="taskState")
+    @Column(name ="taskstate")
     private TaskState taskState;
     @Column(name = "estimation")
     private int estimation;
@@ -40,7 +41,7 @@ public class TaskLog {
     @Transient
     private final static double CONST_RANK_COMPLETE_EXPIRED=1.0;
 
-    public TaskLog(long id, long projectId, Developer developer, LocalDateTime deadline, LocalDateTime endAt, LocalDateTime createdAt, TaskState taskState, int estimation) {
+    public TaskLog(long id, long projectId, Developer developer, LocalDate deadline, LocalDate endAt, LocalDate createdAt, TaskState taskState, int estimation) {
         this.id = id;
         this.projectId = projectId;
         this.developer = developer;
@@ -49,6 +50,9 @@ public class TaskLog {
         this.createdAt = createdAt;
         this.taskState = taskState;
         this.estimation = estimation;
+    }
+
+    public TaskLog() {
     }
 
     public long getId() {
@@ -75,28 +79,28 @@ public class TaskLog {
         this.developer = developer;
     }
 
-    public LocalDateTime getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(LocalDateTime deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 
-    public LocalDateTime getEndAt() {
+    public LocalDate getEndAt() {
         return endAt;
 
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setEndAt(LocalDateTime endAt) {
+    public void setEndAt(LocalDate endAt) {
         this.endAt = endAt;
     }
 

@@ -5,6 +5,7 @@ import additionalObjects.TaskState;
 import org.json.JSONObject;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Entity
 @Table(name="tasks")
@@ -15,15 +16,15 @@ public class Task  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-    @Column(name="createdAt")
-    private LocalDateTime createdAt;
+    @Column(name="createdat")
+    private LocalDate createdAt;
 
     @Column(name="deadline")
-    private LocalDateTime deadline;
-    @Column(name="createdBy")
+    private LocalDate deadline;
+    @Column(name="createdby")
     private long createdBy;
     @Enumerated(EnumType.STRING)
-    @Column(name="taskState")
+    @Column(name="taskstate")
     private TaskState taskState;
     @Column(name="name")
     private String name;
@@ -32,11 +33,10 @@ public class Task  {
     @Enumerated(EnumType.STRING)
     @Column(name="specialization")
     private Specialization specialization;
-    @OneToOne
-    @JoinColumn(name="developer_id")
+    @OneToOne(mappedBy = "task")
     private Developer assignedTo;
 
-    public Task(long id, Project project, LocalDateTime createdAt,LocalDateTime deadline, long createdBy, String name, int estimation, Specialization specialization) {
+    public Task(long id, Project project, LocalDate createdAt,LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -48,7 +48,7 @@ public class Task  {
         this.deadline=deadline;
     }
 
-    public Task(long id, Project project, LocalDateTime createdAt,LocalDateTime deadline, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project, LocalDate createdAt,LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -61,7 +61,7 @@ public class Task  {
         this.deadline=deadline;
     }
 
-    public Task(long id, Project project,  LocalDateTime createdAt,LocalDateTime deadline, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project,  LocalDate createdAt,LocalDate deadline, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -72,6 +72,9 @@ public class Task  {
         this.specialization = specialization;
         this.assignedTo = assignedTo;
         this.deadline=deadline;
+    }
+
+    public Task() {
     }
 
     public long getId() {
@@ -90,11 +93,11 @@ public class Task  {
         this.project = project;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -146,11 +149,11 @@ public class Task  {
         this.assignedTo = assignedTo;
     }
 
-    public LocalDateTime getDeadline() {
+    public LocalDate getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(LocalDateTime deadline) {
+    public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
     }
 
@@ -165,7 +168,10 @@ public class Task  {
         obj.put("taskState",taskState);
         obj.put("specialization",specialization.toString());
         obj.put("estimation",estimation);
-        obj.put("assignedTo",assignedTo.getId());
+        if(assignedTo!=null)
+             obj.put("assignedTo",assignedTo.getId());
+        else
+            obj.put("assignedTo","null");
         obj.put("deadline",deadline.toString());
         return obj;
     }

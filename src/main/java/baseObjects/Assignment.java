@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "assignment")
+@Table(name = "assignments")
 public class Assignment {
 
     @Id
@@ -32,6 +32,9 @@ public class Assignment {
     public Assignment(long developerId, long taskId) {
         this.developerId = developerId;
         this.taskId = taskId;
+    }
+
+    public Assignment() {
     }
 
     public long getId() {
