@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "specialization": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "createdBy": {
+      "type": "integer"
+    },
+    "deadline": {
+      "type": "string"
+    },
+    "estimation": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "specialization",
+    "createdAt",
+    "createdBy",
+    "deadline",
+    "estimation"
+  ]
+}

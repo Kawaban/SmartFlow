@@ -7,6 +7,8 @@ import algorithm.AlgorithmGreedy;
 import baseObjects.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,13 +22,23 @@ public class ControllerDB {
     private SessionFactory sessionFactory;
 
     public ControllerDB() {
-        final SessionFactory sessionFactory=new Configuration()
+     /*   final SessionFactory sessionFactory=new Configuration("hibernate.")
                 .addAnnotatedClass(Developer.class)
                 .addAnnotatedClass(Project.class)
                 .addAnnotatedClass(Task.class)
                 .addAnnotatedClass(TaskLog.class)
                 .addAnnotatedClass(Assignment.class)
-                .buildSessionFactory();
+                .buildSessionFactory();*/
+        Configuration cfg = new Configuration().configure("hibernate.cfg.xml");
+        cfg.addAnnotatedClass(Developer.class);
+        cfg.addAnnotatedClass(Task.class);
+        cfg.addAnnotatedClass(Project.class);
+        cfg.addAnnotatedClass(TaskLog.class);
+        cfg.addAnnotatedClass(Assignment.class);
+        StandardServiceRegistryBuilder sb = new StandardServiceRegistryBuilder();
+        sb.applySettings(cfg.getProperties());
+        StandardServiceRegistry standardServiceRegistry = sb.build();
+        SessionFactory sessionFactory = cfg.buildSessionFactory(standardServiceRegistry);
         this.sessionFactory=sessionFactory;
     }
 
@@ -237,8 +249,13 @@ public class ControllerDB {
         TaskState taskState;
         try {
             taskState = TaskState.valueOf(taskStateStr);
-            if(taskState==TaskState.FAILED || taskState==TaskState.COMPLETED || taskState==TaskState.SKIPPED)
-                createTaskLog(task,task.getAssignedTo(),session,taskState);
+            if(taskState==TaskState.FAILED || taskState==TaskState.COMPLETED || taskState==TaskState.SKIPPED) {
+                createTaskLog(task, task.getAssignedTo(), session, taskState);
+                Developer developer=task.getAssignedTo();
+                developer.setTask(null);
+                session.update(developer);
+                task.setAssignedTo(null);
+            }
         }
         catch (RuntimeException e)
         {
@@ -349,7 +366,7 @@ public class ControllerDB {
         if(assignments.get(0).getProjectId()!=projectId)
             throw new RuntimeException("Error wrong project id");
 
-        if(decision.optString("decision_Y/N")=="Y")
+        if(decision.optString("decision_Y/N").equals("Y"))
         {
             for(Assignment assignment:assignments)
             {
@@ -366,7 +383,7 @@ public class ControllerDB {
             }
             session.getTransaction().commit();
         }
-        else if(decision.optString("decision_Y/N")=="N")
+        else if(decision.optString("decision_Y/N").equals("N"))
         {
             for(Assignment assignment:assignments)
             {

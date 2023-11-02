@@ -2,6 +2,7 @@ package Controllers;
 
 import additionalObjects.Rank;
 import additionalObjects.Specialization;
+import additionalObjects.TaskState;
 import algorithm.Algorithm;
 import baseObjects.Assignment;
 import baseObjects.Developer;
@@ -41,7 +42,7 @@ public class TaskDelegator {
             tasks.add(new ArrayList<Task>());
 
         for(Task task:project.getTasks()) {
-            if (task.getAssignedTo() == null) {
+            if (task.getAssignedTo() == null && task.getTaskState()== TaskState.DEFAULT) {
                 switch (task.getSpecialization()) {
                     case FRONTEND:
                         tasks.get(0).add(task);
