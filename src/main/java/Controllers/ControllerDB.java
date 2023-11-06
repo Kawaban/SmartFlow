@@ -10,11 +10,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,7 @@ public class ControllerDB {
     private SessionFactory sessionFactory;
 
     public ControllerDB() {
-     /*   final SessionFactory sessionFactory=new Configuration("hibernate.")
-                .addAnnotatedClass(Developer.class)
-                .addAnnotatedClass(Project.class)
-                .addAnnotatedClass(Task.class)
-                .addAnnotatedClass(TaskLog.class)
-                .addAnnotatedClass(Assignment.class)
-                .buildSessionFactory();*/
+
         Configuration cfg = new Configuration().configure("hibernate.cfg.xml");
         cfg.addAnnotatedClass(Developer.class);
         cfg.addAnnotatedClass(Task.class);
@@ -46,9 +41,13 @@ public class ControllerDB {
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+id,Project.class)
-                .getSingleResult();
-        String projectJSONString=project.ToJSONObject().toString();
+        Query query=session.createQuery("SELECT i FROM Project i WHERE i.id="+id,Project.class);
+        String projectJSONString=null;
+        if(!query.getResultList().isEmpty())
+        {
+            Project project= (Project) query.getSingleResult();
+            projectJSONString=project.ToJSONObject(true).toString();
+        }
         session.getTransaction().commit();
         return projectJSONString;
 
@@ -60,9 +59,13 @@ public class ControllerDB {
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Developer developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+id,Developer.class)
-                .getSingleResult();
-        String developerJSONString=developer.ToJSONObject(true).toString();
+        Query query=session.createQuery("SELECT i FROM Developer i WHERE i.id="+id,Developer.class);
+        String developerJSONString=null;
+        if(!query.getResultList().isEmpty())
+        {
+            Developer developer= (Developer) query.getSingleResult();
+            developerJSONString=developer.ToJSONObject(true).toString();
+        }
         session.getTransaction().commit();
         return developerJSONString;
     }
@@ -71,11 +74,13 @@ public class ControllerDB {
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Task task=session.createQuery("SELECT i FROM Task i WHERE i.id="+id,Task.class)
-                        .getSingleResult();
+        Query query=session.createQuery("SELECT i FROM Task i WHERE i.id="+id,Task.class);
         String taskJSONString=null;
-        if(task.getId()==projectId)
-             taskJSONString=task.ToJSONObject().toString();
+        if(!query.getResultList().isEmpty())
+        {
+            Task task= (Task) query.getSingleResult();
+            taskJSONString=task.ToJSONObject().toString();
+        }
         session.getTransaction().commit();
         return taskJSONString;
     }
@@ -84,8 +89,10 @@ public class ControllerDB {
     {
         int projectIntID= (int) projectJSON.opt("id");
         long projectId= projectIntID;
-      /*  if(checkProjectId(projectId))
-            throw new RuntimeException("Error, project with this id already exists");*/
+
+        if(!checkProjectId(projectId))
+            throw new RuntimeException("Error, project with this id already exists");
+
         String projectName= (String) projectJSON.opt("name");
 
         JSONArray developersJSON=projectJSON.optJSONArray("developers");
@@ -95,17 +102,14 @@ public class ControllerDB {
         for(int i=0;i<developersJSON.length();i++) {
             int developerIntID= (int) developersJSON.opt(i);
             long developerId= developerIntID;
-            Developer developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class)
-                    .getSingleResult();
-            if(developer!=null)
+            Query query=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class);
+            if(!query.getResultList().isEmpty()) {
+                Developer developer= (Developer) query.getSingleResult();
                 developers.add(developer);
+            }
         }
         Project project=new Project(projectId,projectName,developers);
-        for(Developer developer:developers)
-        {
-            developer.setProject(project);
-            session.update(developer);
-        }
+
         session.save(project);
         session.getTransaction().commit();
 
@@ -115,8 +119,10 @@ public class ControllerDB {
     {
         int developerIntID= (int) developerJSON.opt("id");
         long developerId= developerIntID;
-       /* if(checkDeveloperId(developerId))
-            throw new RuntimeException("Error, developer with this id already exists");*/
+
+        if(!checkDeveloperId(developerId))
+            throw new RuntimeException("Error, developer with this id already exists");
+
         String developerSpecStr= (String) developerJSON.opt("specialization");
         Specialization developerSpec;
         try {
@@ -144,8 +150,7 @@ public class ControllerDB {
 
         int taskIntID= (int) taskJSON.opt("id");
         long taskId= taskIntID;
-        if(checkTaskId(taskId)) {
-           /* session.getTransaction().commit();*/
+        if(!checkTaskId(taskId)) {
             throw new RuntimeException("Error, task with this id already exists");
         }
 
@@ -161,36 +166,38 @@ public class ControllerDB {
         }
         catch (RuntimeException e)
         {
-            /*session.getTransaction().commit();*/
             throw new RuntimeException("Error, wrong specialization");
         }
 
         int estimation=(int) taskJSON.opt("estimation");
         if(!FibonacciChecker.isFibonacci(estimation)) {
-          /*  session.getTransaction().commit();*/
+
             throw new RuntimeException("estimation is not fibonacci number");
         }
 
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
-                .getSingleResult();
-        if(project==null) {
-            /*session.getTransaction().commit();*/
+
+        Query query=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class);
+        Project project;
+        if(query.getResultList().isEmpty()) {
+            session.getTransaction().commit();
             throw new RuntimeException("Error, wrong project id");
         }
+        project= (Project) query.getSingleResult();
+
 
         Integer developerIntID= (Integer) taskJSON.opt("assignedTo");
         Developer developer=null;
         if(developerIntID!=null)
         {
             long developerId= developerIntID;
-            developer=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class)
-                    .getSingleResult();
-            if(developer==null) {
-               /* session.getTransaction().commit();*/
+            Query query1=session.createQuery("SELECT i FROM Developer i WHERE i.id="+developerId,Developer.class);
+            if(query1.getResultList().isEmpty()) {
+                session.getTransaction().commit();
                 throw new RuntimeException("wrong developer id");
             }
+            developer= (Developer) query1.getSingleResult();
         }
 
         String createdAtStr=taskJSON.getString("createdAt");
@@ -200,7 +207,7 @@ public class ControllerDB {
         }
         catch (RuntimeException e)
         {
-           /* session.getTransaction().commit();*/
+            session.getTransaction().commit();
             throw new RuntimeException("Wrong createdAt Date");
         }
 
@@ -212,7 +219,7 @@ public class ControllerDB {
         }
         catch (RuntimeException e)
         {
-            /*session.getTransaction().commit();*/
+            session.getTransaction().commit();
             throw new RuntimeException("Wrong deadline Date");
         }
 
@@ -229,39 +236,51 @@ public class ControllerDB {
 
     }
 
-    public void EditNewTask(long projectId, long taskId, JSONObject taskJSON)
+    public void EditTask(long projectId, long taskId, JSONObject taskJSON)
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Task task=session.createQuery("SELECT i FROM Task i WHERE i.id="+taskId,Task.class)
-                .getSingleResult();
-        if(task==null) {
+        Query query=session.createQuery("SELECT i FROM Task i WHERE i.id="+taskId,Task.class);
+        if(query.getResultList().isEmpty()) {
             session.getTransaction().commit();
             throw new RuntimeException("Object wasn't found");
         }
+        Task task= (Task) query.getSingleResult();
 
         if(task.getProject().getId()!=projectId) {
             session.getTransaction().commit();
             throw new RuntimeException("Wrong project id");
         }
 
+        if(task.getTaskState()==TaskState.FAILED || task.getTaskState()==TaskState.COMPLETED || task.getTaskState()==TaskState.SKIPPED)
+        {
+            session.getTransaction().commit();
+            throw new RuntimeException("Impossible to change status of this task");
+        }
+
         String taskStateStr=taskJSON.optString("taskState");
         TaskState taskState;
         try {
             taskState = TaskState.valueOf(taskStateStr);
-            if(taskState==TaskState.FAILED || taskState==TaskState.COMPLETED || taskState==TaskState.SKIPPED) {
-                createTaskLog(task, task.getAssignedTo(), session, taskState);
-                Developer developer=task.getAssignedTo();
-                developer.setTask(null);
-                session.update(developer);
-                task.setAssignedTo(null);
-            }
         }
         catch (RuntimeException e)
         {
             session.getTransaction().commit();
             throw new RuntimeException("Wrong TaskState");
         }
+
+            if((taskState==TaskState.FAILED || taskState==TaskState.COMPLETED || taskState==TaskState.SKIPPED) && task.getAssignedTo()!=null) {
+                createTaskLog(task, task.getAssignedTo(), session, taskState);
+                Developer developer;
+                developer=task.getAssignedTo();
+                developer.setTask(null);
+                session.update(developer);
+                task.setAssignedTo(null);
+
+
+            }
+
+
         task.setTaskState(taskState);
         session.update(task);
         session.getTransaction().commit();
@@ -269,73 +288,33 @@ public class ControllerDB {
 
     public void createTaskLog(Task task,Developer developer,Session session,TaskState taskState)
     {
-        TaskLog taskLog=new TaskLog(task.getId(),developer.getProject().getId(),developer,task.getDeadline(), LocalDate.now(),task.getCreatedAt(),taskState,task.getEstimation());
+        TaskLog taskLog=new TaskLog(task.getId(),task.getProject().getId(),developer,task.getDeadline(), LocalDate.now(),task.getCreatedAt(),taskState,task.getEstimation());
         session.save(taskLog);
     }
 
 
-    public Boolean checkTaskId(long taskId)
-    {
-        Session session=sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        List<Task> tasks=session.createQuery("SELECT i FROM Task i",Task.class)
-                .getResultList();
-        for(Task task:tasks)
-            if(task.getId()==taskId) {
-                session.getTransaction().commit();
-                return true;
-            }
-        session.getTransaction().commit();
-        return false;
-
-    }
-
-    public Boolean checkProjectId(long projectId)
-    {
-        Session session=sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        List<Project> projects=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
-                .getResultList();
-        for(Project project:projects)
-            if(project.getId()==projectId){
-                session.getTransaction().commit();
-                return true;
-            }
-        session.getTransaction().commit();
-        return false;
-    }
-
-    public Boolean checkDeveloperId(long developerId)
-    {
-        Session session=sessionFactory.getCurrentSession();
-        session.beginTransaction();
-        List<Developer> developers=session.createQuery("SELECT i FROM Developer i",Developer.class)
-                .getResultList();
-        for(Developer developer:developers)
-            if(developer.getId()==developerId){
-                session.getTransaction().commit();
-                return true;
-            }
-        session.getTransaction().commit();
-        return false;
-    }
 
 
 
-    public JSONArray delegateTasks(long projectId,JSONObject assignmentJSON)
+
+    public JSONArray createAssignments(long projectId,JSONObject assignmentJSON)
     {
         int assignmentInt= (int) assignmentJSON.opt("id");
         long assignmentID= assignmentInt;
 
+        if(!checkAssignmentId(assignmentID)) {
+            throw new RuntimeException("Error, assignment with this id already exists");
+        }
+
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Project project=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class)
-                .getSingleResult();
-        if(project==null)
+        Query query=session.createQuery("SELECT i FROM Project i WHERE i.id="+projectId,Project.class);
+        if(query.getResultList().isEmpty())
         {
             session.getTransaction().commit();
             throw new RuntimeException("Error, wrong project id");
         }
+        Project project= (Project) query.getSingleResult();
 
         TaskDelegator taskDelegator=new TaskDelegator(new AlgorithmGreedy());
         ArrayList<Assignment> updateInstances=taskDelegator.delegateTasks(project);
@@ -360,13 +339,19 @@ public class ControllerDB {
     {
         Session session=sessionFactory.getCurrentSession();
         session.beginTransaction();
-        List<Assignment> assignments=session.createQuery("SELECT i FROM Assignment i WHERE i.id="+assignmentId,Assignment.class)
-            .getResultList();
-
-        if(assignments.get(0).getProjectId()!=projectId)
+        Query query=session.createQuery("SELECT i FROM Assignment i WHERE i.id="+assignmentId,Assignment.class);
+        if(query.getResultList().isEmpty())
+        {
+            session.getTransaction().commit();
+            throw new RuntimeException("Error wrong assignment id");
+        }
+        List<Assignment> assignments=query.getResultList();
+        if(assignments.get(0).getProjectId()!=projectId) {
+            session.getTransaction().commit();
             throw new RuntimeException("Error wrong project id");
+        }
 
-        if(decision.optString("decision_Y/N").equals("Y"))
+        if(decision.optString("decision").equals("Y"))
         {
             for(Assignment assignment:assignments)
             {
@@ -383,7 +368,7 @@ public class ControllerDB {
             }
             session.getTransaction().commit();
         }
-        else if(decision.optString("decision_Y/N").equals("N"))
+        else if(decision.optString("decision").equals("N"))
         {
             for(Assignment assignment:assignments)
             {
@@ -395,6 +380,60 @@ public class ControllerDB {
             session.getTransaction().commit();
             throw new RuntimeException("Error wrong decision input");
         }
+    }
+
+
+    public Boolean checkTaskId(long taskId)
+    {
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Query query =  session.createQuery("SELECT i FROM Task i WHERE i.id=" + taskId, Task.class);
+        if (query.getResultList().isEmpty()) {
+            session.getTransaction().commit();
+            return true;
+        }
+        session.getTransaction().commit();
+        return false;
+
+    }
+
+    public Boolean checkProjectId(long projectId)
+    {
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Query query =  session.createQuery("SELECT i FROM Project i WHERE i.id=" + projectId, Project.class);
+        if (query.getResultList().isEmpty()) {
+            session.getTransaction().commit();
+            return true;
+        }
+        session.getTransaction().commit();
+        return false;
+    }
+
+    public Boolean checkDeveloperId(long developerId)
+    {
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Query query =  session.createQuery("SELECT i FROM Developer i WHERE i.id=" + developerId, Developer.class);
+        if (query.getResultList().isEmpty()) {
+            session.getTransaction().commit();
+            return true;
+        }
+        session.getTransaction().commit();
+        return false;
+    }
+
+    public Boolean checkAssignmentId(long assignmentId)
+    {
+        Session session=sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Query query =  session.createQuery("SELECT i FROM Assignment i WHERE i.id=" + assignmentId, Assignment.class);
+        if (query.getResultList().isEmpty()) {
+            session.getTransaction().commit();
+            return true;
+        }
+        session.getTransaction().commit();
+        return false;
     }
 
 

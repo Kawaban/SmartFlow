@@ -16,9 +16,13 @@ public class Developer  {
     @Id
     @Column(name="id")
     private long id;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="project_id")
-    private Project project;
+    @ManyToMany(fetch=FetchType.LAZY)
+    @JoinTable(
+            name="project_developers",
+            joinColumns=@JoinColumn(name="developer_id"),
+            inverseJoinColumns = @JoinColumn(name="project_id")
+    )
+    private List<Project> projects;
     @OneToOne
     @JoinColumn(name="task_id")
     private Task task;
@@ -34,18 +38,8 @@ public class Developer  {
         this.specialization = specialization;
     }
 
-    public Developer(long id, Project project, Specialization specialization) {
-        this.id = id;
-        this.project = project;
-        this.specialization = specialization;
-    }
 
-    public Developer(long id, Project project, Task task, Specialization specialization) {
-        this.id = id;
-        this.project = project;
-        this.task = task;
-        this.specialization = specialization;
-    }
+
 
     public Developer() {
     }
@@ -58,12 +52,12 @@ public class Developer  {
         this.id = id;
     }
 
-    public Project getProject() {
-        return project;
+    public List<Project> getProjects() {
+        return projects;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setProjects(ArrayList<Project> projects) {
+        this.projects = projects;
     }
 
     public Task getTask() {
@@ -95,24 +89,21 @@ public class Developer  {
         JSONObject obj=new JSONObject();
         obj.put("id",id);
         obj.put("specialization",specialization.toString());
-
-        if(project!=null)
-            obj.put("project",project.getId());
-        else
-            obj.put("project","null");
-
-        if(task!=null)
-            obj.put("task",task.getId());
-        else
-            obj.put("task","null");
-
-
-        if(extendedInfo && tasksLogs!=null)
-        {
-            ArrayList<JSONObject> taskLogsJSON=new ArrayList<JSONObject>();
-            for(TaskLog taskLog:tasksLogs)
-                taskLogsJSON.add(taskLog.ToJSONObject());
+        if(extendedInfo) {
+            if (projects != null) {
+                ArrayList<JSONObject> projectsJSON = new ArrayList<JSONObject>();
+                for (Project project : projects)
+                    projectsJSON.add(project.ToJSONObject(false));
+                obj.put("projects", projectsJSON);
+            } else
+                obj.put("projects", "null");
         }
+
+            if (task != null)
+                obj.put("task", task.getId());
+            else
+                obj.put("task", "null");
+
 
         return obj;
 

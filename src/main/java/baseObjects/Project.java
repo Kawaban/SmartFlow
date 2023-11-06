@@ -14,7 +14,12 @@ public class Project {
     private long id;
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
+    @ManyToMany(fetch=FetchType.LAZY)
+    @JoinTable(
+            name="project_developers",
+            joinColumns=@JoinColumn(name="project_id"),
+            inverseJoinColumns = @JoinColumn(name="developer_id")
+    )
     List<Developer> projectDevelopers;
     @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
     List<Task> tasks;
@@ -60,24 +65,26 @@ public class Project {
         this.tasks = tasks;
     }
 
-    public JSONObject ToJSONObject()
+    public JSONObject ToJSONObject(Boolean extendedInfo)
     {
         JSONObject obj=new JSONObject();
         obj.put("id",id);
         obj.put("name",name);
 
-        ArrayList<JSONObject> developers=new ArrayList<JSONObject>();
-        if(projectDevelopers!=null)
-           for(Developer developer:projectDevelopers)
-               developers.add(developer.ToJSONObject(false));
+        if(extendedInfo) {
+            ArrayList<JSONObject> developers = new ArrayList<JSONObject>();
+            if (projectDevelopers != null)
+                for (Developer developer : projectDevelopers)
+                    developers.add(developer.ToJSONObject(false));
 
-        obj.put("developers",developers);
-        ArrayList<JSONObject> tasksJSON=new ArrayList<JSONObject>();
-        System.out.println(-1);
-        if(tasks!=null)
-            for(Task task:tasks)
-                tasksJSON.add(task.ToJSONObject());
-        obj.put("tasks",tasksJSON);
+            obj.put("developers", developers);
+            ArrayList<JSONObject> tasksJSON = new ArrayList<JSONObject>();
+            System.out.println(-1);
+            if (tasks != null)
+                for (Task task : tasks)
+                    tasksJSON.add(task.ToJSONObject());
+            obj.put("tasks", tasksJSON);
+        }
         return obj;
     }
 }

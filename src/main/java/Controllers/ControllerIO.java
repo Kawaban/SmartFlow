@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URI;
-import java.util.Scanner;
 
 import static spark.Spark.*;
 
@@ -62,10 +61,20 @@ public class ControllerIO {
             }
         });
 
-      /*  get("/project/user",(req,res) -> {
-            res.status(200);
-            return req.pathInfo();
-        });*/
+        get("/user/:userId",(request,response) -> {
+            long userId= Long.parseLong(request.params("userId"));
+            String obj= controllerDB.findDeveloperById(userId);
+            if(obj!=null) {
+                response.status(200);
+                return obj;
+            }
+            else
+            {
+                response.status(404);
+                return "Error: Object was not found";
+            }
+
+        });
     }
 
     public static void activatePosts(String[] args,ControllerDB controllerDB)
@@ -81,7 +90,7 @@ public class ControllerIO {
 
             FileInputStream fis2 = new FileInputStream("src/main/resources/JSONschemas/postproject.json");
             String data2 = IOUtils.toString(fis2, "UTF-8");
-             postProjectSchema = validator.registerSchema(data2);
+            postProjectSchema = validator.registerSchema(data2);
 
             FileInputStream fis3 = new FileInputStream("src/main/resources/JSONschemas/posttask.json");
             String data3 = IOUtils.toString(fis3, "UTF-8");
@@ -98,22 +107,23 @@ public class ControllerIO {
 
         post("/project",(request, response) -> {
 
-            String stringJson= request.body();
+            String stringJson = request.body();
 
-            Validator.Result result = validator.validate(postProjectSchema, stringJson);
-            if (!result.isValid()) {
-                response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
-            }
+
 
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
+                Validator.Result result = validator.validate(postProjectSchema, stringJson);
+                if (!result.isValid()) {
+                    response.status(400);
+                    return "Error: wrong input parameters: ";
+                }
                 controllerDB.createNewProject(jsonObject);
                 response.status(200);
                 return "Created projectId: " + jsonObject.get("id");
-            }catch (RuntimeException err){
+            } catch (RuntimeException err) {
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
         });
 
@@ -121,20 +131,21 @@ public class ControllerIO {
             String stringJson= request.body();
             long projectId= Long.parseLong(request.params("projectId"));
 
-            Validator.Result result = validator.validate(postTaskSchema, stringJson);
-            if (!result.isValid()) {
-                response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
-            }
+
 
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
+                Validator.Result result = validator.validate(postTaskSchema, stringJson);
+                if (!result.isValid()) {
+                    response.status(400);
+                    return "Error: wrong input parameters: ";
+                }
                 controllerDB.createNewTask(jsonObject,projectId);
                 response.status(200);
                 return "Created taskId: " + jsonObject.get("id")+", added to a project: "+projectId;
             }catch (RuntimeException err){
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
 
         });
@@ -145,7 +156,7 @@ public class ControllerIO {
             Validator.Result result = validator.validate(postDeveloperSchema, stringJson);
             if (!result.isValid()) {
                 response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
+                return "Error: wrong input parameters: ";
             }
 
             try {
@@ -155,7 +166,7 @@ public class ControllerIO {
                 return "Created developerId: " + jsonObject.get("id");
             } catch (RuntimeException err) {
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
         });
 
@@ -163,21 +174,22 @@ public class ControllerIO {
             String stringJson= request.body();
             long projectId= Long.parseLong(request.params("projectId"));
 
-            Validator.Result result = validator.validate(postAssignmentSchema, stringJson);
-            if (!result.isValid()) {
-                response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
-            }
+
 
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
-                JSONArray array=controllerDB.delegateTasks(projectId,jsonObject);
+                Validator.Result result = validator.validate(postAssignmentSchema, stringJson);
+                if (!result.isValid()) {
+                    response.status(400);
+                    return "Error: wrong input parameters: ";
+                }
+                JSONArray array=controllerDB.createAssignments(projectId,jsonObject);
                 response.status(200);
                 return array.toString();
             }
             catch (RuntimeException err){
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
         });
     }
@@ -208,20 +220,21 @@ public class ControllerIO {
             long taskId= Long.parseLong(request.params("taskId"));
             long projectId= Long.parseLong(request.params("projectId"));
 
-            Validator.Result result = validator.validate(putTaskSchema, stringJson);
-            if (!result.isValid()) {
-                response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
-            }
+
 
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
-                controllerDB.EditNewTask(projectId,taskId,jsonObject);
+                Validator.Result result = validator.validate(putTaskSchema, stringJson);
+                if (!result.isValid()) {
+                    response.status(400);
+                    return "Error: wrong input parameters: ";
+                }
+                controllerDB.EditTask(projectId,taskId,jsonObject);
                 response.status(200);
                 return "Status updated";
             }catch (RuntimeException err){
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
         });
 
@@ -230,20 +243,21 @@ public class ControllerIO {
             long projectId= Long.parseLong(request.params("projectId"));
             long assignmentId= Long.parseLong(request.params("assignmentId"));
 
-            Validator.Result result = validator.validate(putAssignmentSchema, stringJson);
-            if (!result.isValid()) {
-                response.status(400);
-                return "Error: wrong input parameters: " + result.toString();
-            }
+
 
             try{
                 JSONObject jsonObject = new JSONObject(stringJson);
+                Validator.Result result = validator.validate(putAssignmentSchema, stringJson);
+                if (!result.isValid()) {
+                    response.status(400);
+                    return "Error: wrong input parameters: ";
+                }
                 controllerDB.decideDelegationOfTasks(assignmentId,projectId,jsonObject);
                 response.status(200);
                 return "Assignment is complete";
             } catch (RuntimeException err){
                 response.status(400);
-                return "Error" + " " + err.toString();
+                return err.getMessage();
             }
         });
     }
