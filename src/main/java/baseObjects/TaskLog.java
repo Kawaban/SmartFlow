@@ -10,36 +10,36 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name="tasklogs")
+@Table(name = "task_logs")
 public class TaskLog {
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     private long id;
-    @Column(name="project_id")
+    @Column(name = "project_id")
     private long projectId;
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="developer_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "developer_id")
     private Developer developer;
     @Column(name = "deadline")
     private LocalDate deadline;
-    @Column(name = "endat")
+    @Column(name = "end_at")
     private LocalDate endAt;
-    @Column(name = "createdat")
+    @Column(name = "created_at")
     private LocalDate createdAt;
     @Enumerated(EnumType.STRING)
-    @Column(name ="taskstate")
+    @Column(name = "task_state")
     private TaskState taskState;
     @Column(name = "estimation")
     private int estimation;
     @Transient
-    private final static double CONST_RANK_FAILED=0;
+    private final static double CONST_RANK_FAILED = 0;
     @Transient
-    private final static double CONST_RANK_COMPLETE_HIGH=5.5;
+    private final static double CONST_RANK_COMPLETE_HIGH = 5.5;
     @Transient
-    private final static double CONST_RANK_COMPLETE_LOW=2.0;
+    private final static double CONST_RANK_COMPLETE_LOW = 2.0;
 
     @Transient
-    private final static double CONST_RANK_COMPLETE_EXPIRED=1.0;
+    private final static double CONST_RANK_COMPLETE_EXPIRED = 1.0;
 
     public TaskLog(long id, long projectId, Developer developer, LocalDate deadline, LocalDate endAt, LocalDate createdAt, TaskState taskState, int estimation) {
         this.id = id;
@@ -120,31 +120,31 @@ public class TaskLog {
         this.estimation = estimation;
     }
 
-    public JSONObject ToJSONObject()
-    {
-        JSONObject obj=new JSONObject();
-        obj.put("id",id);
-        obj.put("projectId",projectId);
-        obj.put("createdAt",deadline.toString());
-        obj.put("endAt",endAt.toString());
-        obj.put("taskState",taskState.toString());
-        obj.put("estimation",estimation);
-        obj.put("createdAt",createdAt.toString());
+    public JSONObject ToJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("projectId", projectId);
+        obj.put("createdAt", deadline.toString());
+        obj.put("endAt", endAt.toString());
+        obj.put("taskState", taskState.toString());
+        obj.put("estimation", estimation);
+        obj.put("createdAt", createdAt.toString());
         return obj;
     }
 
-    public Double calculateRank()
-    {
-        if(taskState==TaskState.FAILED)
+    public Double calculateRank() {
+        if (taskState == TaskState.FAILED)
             return CONST_RANK_FAILED;
 
-        long deltaTime= ChronoUnit.DAYS.between(endAt,deadline);
-        if(deltaTime<0)
+        long deltaTime = ChronoUnit.DAYS.between(endAt, deadline);
+        if (deltaTime < 0)
             return CONST_RANK_COMPLETE_EXPIRED;
 
-        long taskTime=ChronoUnit.DAYS.between(createdAt,deadline);
-        double percent=deltaTime/taskTime;
-        return CONST_RANK_COMPLETE_HIGH - percent*(CONST_RANK_COMPLETE_HIGH-CONST_RANK_COMPLETE_LOW);
+        long taskTime = ChronoUnit.DAYS.between(createdAt, deadline);
+        if (deltaTime > taskTime)
+            return CONST_RANK_COMPLETE_HIGH;
+        double percent = deltaTime / taskTime;
+        return CONST_RANK_COMPLETE_HIGH - percent * (CONST_RANK_COMPLETE_HIGH - CONST_RANK_COMPLETE_LOW);
     }
 
 }

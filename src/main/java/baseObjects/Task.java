@@ -7,36 +7,37 @@ import org.json.JSONObject;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Entity
-@Table(name="tasks")
-public class Task  {
+@Table(name = "tasks")
+public class Task {
     @Id
     @Column(name = "id")
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-    @Column(name="createdat")
+    @Column(name = "created_at")
     private LocalDate createdAt;
 
-    @Column(name="deadline")
+    @Column(name = "deadline")
     private LocalDate deadline;
-    @Column(name="createdby")
+    @Column(name = "created_by")
     private long createdBy;
     @Enumerated(EnumType.STRING)
-    @Column(name="taskstate")
+    @Column(name = "task_state")
     private TaskState taskState;
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
-    @Column(name="estimation")
+    @Column(name = "estimation")
     private int estimation;
     @Enumerated(EnumType.STRING)
-    @Column(name="specialization")
+    @Column(name = "specialization")
     private Specialization specialization;
     @OneToOne(mappedBy = "task")
     private Developer assignedTo;
 
-    public Task(long id, Project project, LocalDate createdAt,LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization) {
+    public Task(long id, Project project, LocalDate createdAt, LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -44,24 +45,24 @@ public class Task  {
         this.name = name;
         this.estimation = estimation;
         this.specialization = specialization;
-        this.taskState=TaskState.DEFAULT;
-        this.deadline=deadline;
+        this.taskState = TaskState.DEFAULT;
+        this.deadline = deadline;
     }
 
-    public Task(long id, Project project, LocalDate createdAt,LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project, LocalDate createdAt, LocalDate deadline, long createdBy, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
-        this.taskState=TaskState.DEFAULT;
+        this.taskState = TaskState.DEFAULT;
         this.name = name;
         this.estimation = estimation;
         this.specialization = specialization;
         this.assignedTo = assignedTo;
-        this.deadline=deadline;
+        this.deadline = deadline;
     }
 
-    public Task(long id, Project project,  LocalDate createdAt,LocalDate deadline, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
+    public Task(long id, Project project, LocalDate createdAt, LocalDate deadline, long createdBy, TaskState taskState, String name, int estimation, Specialization specialization, Developer assignedTo) {
         this.id = id;
         this.project = project;
         this.createdAt = createdAt;
@@ -71,7 +72,7 @@ public class Task  {
         this.estimation = estimation;
         this.specialization = specialization;
         this.assignedTo = assignedTo;
-        this.deadline=deadline;
+        this.deadline = deadline;
     }
 
     public Task() {
@@ -157,22 +158,21 @@ public class Task  {
         this.deadline = deadline;
     }
 
-    public JSONObject ToJSONObject()
-    {
-        JSONObject obj=new JSONObject();
-        obj.put("id",id);
-        obj.put("project_id",project.getId());
-        obj.put("createdAt",createdAt.toString());
-        obj.put("createdBy",createdBy);
-        obj.put("name",name);
-        obj.put("taskState",taskState);
-        obj.put("specialization",specialization.toString());
-        obj.put("estimation",estimation);
-        if(assignedTo!=null)
-             obj.put("assignedTo",assignedTo.getId());
+    public JSONObject ToJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("project_id", project.getId());
+        obj.put("createdAt", createdAt.toString());
+        obj.put("createdBy", createdBy);
+        obj.put("name", name);
+        obj.put("taskState", taskState);
+        obj.put("specialization", specialization.toString());
+        obj.put("estimation", estimation);
+        if (assignedTo != null)
+            obj.put("assignedTo", assignedTo.getId());
         else
-            obj.put("assignedTo","null");
-        obj.put("deadline",deadline.toString());
+            obj.put("assignedTo", "null");
+        obj.put("deadline", deadline.toString());
         return obj;
     }
 }

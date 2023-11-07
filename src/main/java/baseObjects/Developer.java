@@ -11,34 +11,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="developers")
-public class Developer  {
+@Table(name = "developers")
+public class Developer {
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     private long id;
-    @ManyToMany(fetch=FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name="project_developers",
-            joinColumns=@JoinColumn(name="developer_id"),
-            inverseJoinColumns = @JoinColumn(name="project_id")
+            name = "projects_developers",
+            joinColumns = @JoinColumn(name = "developer_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
     )
     private List<Project> projects;
     @OneToOne
-    @JoinColumn(name="task_id")
+    @JoinColumn(name = "task_id")
     private Task task;
     @Enumerated(EnumType.STRING)
-    @Column(name="specialization")
+    @Column(name = "specialization")
     private Specialization specialization;
 
-    @OneToMany(mappedBy = "developer",fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "developer", fetch = FetchType.LAZY)
     private List<TaskLog> tasksLogs;
 
     public Developer(long id, Specialization specialization) {
         this.id = id;
         this.specialization = specialization;
     }
-
-
 
 
     public Developer() {
@@ -84,12 +82,11 @@ public class Developer  {
         this.tasksLogs = tasksLogs;
     }
 
-    public JSONObject ToJSONObject(Boolean extendedInfo)
-    {
-        JSONObject obj=new JSONObject();
-        obj.put("id",id);
-        obj.put("specialization",specialization.toString());
-        if(extendedInfo) {
+    public JSONObject ToJSONObject(Boolean extendedInfo) {
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("specialization", specialization.toString());
+        if (extendedInfo) {
             if (projects != null) {
                 ArrayList<JSONObject> projectsJSON = new ArrayList<JSONObject>();
                 for (Project project : projects)
@@ -99,25 +96,23 @@ public class Developer  {
                 obj.put("projects", "null");
         }
 
-            if (task != null)
-                obj.put("task", task.getId());
-            else
-                obj.put("task", "null");
+        if (task != null)
+            obj.put("task", task.getId());
+        else
+            obj.put("task", "null");
 
 
         return obj;
 
     }
 
-    public Rank calculateRank(int estimation)
-    {
-        Rank rank=new Rank(estimation,id);
-        for(TaskLog taskLog:tasksLogs)
-        {
-            if(taskLog.getEstimation()==estimation)
+    public Rank calculateRank(int estimation) {
+        Rank rank = new Rank(estimation, id);
+        for (TaskLog taskLog : tasksLogs) {
+            if (taskLog.getEstimation() == estimation)
                 rank.updateRank(taskLog.calculateRank());
         }
-        if(rank.getPower()==0)
+        if (rank.getPower() == 0)
             rank.setDefaultRank();
         return rank;
     }

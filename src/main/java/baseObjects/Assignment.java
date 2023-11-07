@@ -10,7 +10,7 @@ public class Assignment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="tech_id")
+    @Column(name = "tech_id")
     private long tech_id;
     @Column(name = "id")
     private long id;
@@ -70,12 +70,10 @@ public class Assignment {
     }
 
 
-    public JSONObject ToJSONObject()
-    {
-        JSONObject obj=new JSONObject();
-        obj.put("id",id);
-        obj.put("developerId",developerId);
-        obj.put("taskId",taskId);
+    public JSONObject ToJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("developerId", developerId);
+        obj.put("taskId", taskId);
         return obj;
     }
 }

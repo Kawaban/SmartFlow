@@ -9,5 +9,5 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public interface Algorithm {
-    abstract public ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers);
+    ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers);
 }

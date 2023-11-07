@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="projects")
+@Table(name = "projects")
 public class Project {
     @Id
     @Column(name = "id")
     private long id;
     @Column(name = "name")
     private String name;
-    @ManyToMany(fetch=FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name="project_developers",
-            joinColumns=@JoinColumn(name="project_id"),
-            inverseJoinColumns = @JoinColumn(name="developer_id")
+            name = "projects_developers",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "developer_id")
     )
     List<Developer> projectDevelopers;
-    @OneToMany(mappedBy = "project",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     List<Task> tasks;
 
     public Project(long id, String name, ArrayList<Developer> projectDevelopers) {
@@ -65,13 +65,12 @@ public class Project {
         this.tasks = tasks;
     }
 
-    public JSONObject ToJSONObject(Boolean extendedInfo)
-    {
-        JSONObject obj=new JSONObject();
-        obj.put("id",id);
-        obj.put("name",name);
+    public JSONObject ToJSONObject(Boolean extendedInfo) {
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("name", name);
 
-        if(extendedInfo) {
+        if (extendedInfo) {
             ArrayList<JSONObject> developers = new ArrayList<JSONObject>();
             if (projectDevelopers != null)
                 for (Developer developer : projectDevelopers)
