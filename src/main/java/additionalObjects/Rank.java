@@ -2,7 +2,6 @@ package additionalObjects;
 
 import baseObjects.Developer;
 import org.hibernate.sql.Update;
-
 public class Rank {
     private int estimation;
     private double value;

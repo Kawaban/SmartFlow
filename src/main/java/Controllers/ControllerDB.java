@@ -270,7 +270,7 @@ public class ControllerDB {
     }
 
 
-    public JSONArray createAssignments(long projectId, JSONObject assignmentJSON) {
+    public ArrayList<JSONObject> createAssignments(long projectId, JSONObject assignmentJSON) {
         int assignmentInt = (int) assignmentJSON.opt("id");
         long assignmentID = assignmentInt;
 
@@ -300,9 +300,9 @@ public class ControllerDB {
             JSONObject object = assignment.ToJSONObject();
             objects.add(object);
         }
-        assignmentsJSONArray.put(objects);
+
         session.getTransaction().commit();
-        return assignmentsJSONArray;
+        return objects;
     }
 
     public void decideDelegationOfTasks(long assignmentId, long projectId, JSONObject decision) {
