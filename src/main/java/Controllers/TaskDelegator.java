@@ -10,7 +10,7 @@ import baseObjects.Project;
 import baseObjects.Task;
 
 import java.util.*;
-//TaskDelegator is
+//TaskDelegator is responsible for maneging/preparing data, start an algorithm and bring a result to ControllerDB
 public class TaskDelegator {
     protected Algorithm algorithm;
 

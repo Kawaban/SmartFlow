@@ -1,0 +1,126 @@
+Documentation
+0.Configuration:
+    PostgreSQL is necessary for correct working of API
+ ! ///  Is necessary to manually create or to have existing DB which name is equal to DB name in configuration file ///!
+    Default DB name : application
+    Default username: postgres
+    Default password: postgres
+    Default DB port: 5432
+
+    Change in configuration file if necessary
+    DB configuration file: src/main/hibernate.cfg.xml
+
+    For HTTP requests and response default port: 8080
+
+1.Objects:
+    Developer:
+        required: id(number), specification(existing Specification (see Specification part)).
+        Developer is a main unit for project development,
+        Developer can be added to many project, but they may be assigned only to one task.
+        Developer is detached from the task when task is over(see Task) or by manually assignation to the other task.
+        Developer may be assigned to the task manually or by algorithm.
+        Developer may be assigned only to the task with the same specification.
+
+    Project:
+        required: id(number), name(string), developers(array of numbers(existing developers id)).
+        Project consists of tasks and developers.
+        Developers are attached to the project only by project initialization
+        There is no possibility to add developer to the project later.
+
+    Task:
+        required: id(number), name(string), createdAt(date format(YYYY-MM-DD)), deadline(date format(YYYY-MM-DD)),
+        createdBy(number), specification(specification), estimation (fibonacci number)
+        supported: assignedAt(id of existing developer)
+        Tasks are main blocks of project development
+        Developer may be assigned to the task by assignedAt field
+        Task has task state(see task state part)
+        Task is over when task state is equal to COMPLETED, SKIPPED, FAILED
+        Task state may be edited by appropriate request
+        When the task is over there is no possibility to change task state
+
+    TaskLog:
+        Creates when task is over
+        Consist on obligatory data to estimate the efficiency of the developer while working on this task
+        Connected to the developer
+
+    Assignment:
+        required: id(number)
+        Is a result of an algorithm work, consists of proposed pair developer-task
+        When created, doesn't change any object
+        Assignments are deleted when proposal is approved or declined
+        If Approved attaches developer to the task
+        If Declined does nothing
+
+    Specialization:
+        states:  FRONTEND, BACKEND, DEVOPS, UX_UI
+
+    TaskState:
+        states: DEFAULT, ASSIGNED,  COMPLETED, FAILED, SKIPPED
+
+2.Requests and Responses:
+     get(/project/:projectId):
+        response:
+          code 200:  id(number), name(string),developers(array of objects), tasks(array of objects)
+          code 404:  exception(string),status("error")
+
+     get(/user/:userId)
+        response:
+          code 200:  id(number),specialization(string), task(object), projects(array of objects)
+          code 404: ,exception(string),status("error")
+
+     get(/project/:projectId/task/:taskId)
+        response:
+                  code 200:  id(number),specialization(string), assignedTo(number), project_id(number), taskState(string),
+                  createdAt(date), deadline(date), estimation(number), name(string)
+                  code 404: exception(string),status("error")
+
+     post(/project)
+            request:
+               required: id(number), name(string), developers(array of numbers(existing developers id)).
+            response:
+                code 200: status("complete")
+                code 400: exception(string),status("error")
+
+     post(/project/:projectId/task)
+            request:
+                required: id(number), name(string),createdAt(date format(YYYY-MM-DD)),deadline(date format(YYYY-MM-DD)),
+                        createdBy(number), specification(specification), estimation (fibonacci number)
+                supported: assignedAt(id of existing developer)
+            response:
+                 code 200: status("complete")
+                 code 400: exception(string),status("error")
+
+     post(/user)
+           request:
+                required: id(number), specification(existing Specification).
+           response:
+                 code 200: status("complete")
+                 code 400: exception(string),status("error")
+
+     post(project/:projectId/assignment)
+           request:
+                required: id(number)
+           response:
+                code 200: assignments array(taskId number, developerId number),status("complete")
+                code 400: exception(string),status("error")
+
+     put(/project/:projectId/task/:taskId)
+           request:
+                required: taskState(existing taskState)
+           response:
+                code 200: status("complete")
+                code 400: exception(string),status("error")
+
+     put(project/:projectId/assignment/:assignmentId)
+           request:
+                required: decision(string)
+           response:
+                code 200: status("complete")
+                code 400: exception(string),status("error")
+3.Additional info:
+    Verification JSON Schemas are located in src/main/JSONschemas
+    used Hibernate and Spark frameworks, PostgreSQL DB
+
+
+
+

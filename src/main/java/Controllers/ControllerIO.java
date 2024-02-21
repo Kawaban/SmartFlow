@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import static spark.Spark.*;
 
@@ -37,14 +38,20 @@ public class ControllerIO {
                 obj = controllerDB.findProjectById(projectId);
             } catch (RuntimeException err) {
                 response.status(400);
-                return "Error" + " " + err;
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
             if (obj != null) {
                 response.status(200);
                 return obj;
             } else {
                 response.status(404);
-                return "Error: Object was not found";
+                JSONObject exception = new JSONObject();
+                exception.put("exception", "Error: Object was not found");
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
 
@@ -57,19 +64,25 @@ public class ControllerIO {
                 return obj;
             } else {
                 response.status(404);
-                return "Error: Object was not found";
+                JSONObject exception = new JSONObject();
+                exception.put("exception", "Error: Object was not found");
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
 
         get("/user/:userId", (request, response) -> {
             long userId = Long.parseLong(request.params("userId"));
-            String obj = controllerDB.findDeveloperById(userId);
-            if (obj != null) {
+            String object = controllerDB.findDeveloperById(userId);
+            if (object!= null) {
                 response.status(200);
-                return obj;
+                return object;
             } else {
                 response.status(404);
-                return "Error: Object was not found";
+                JSONObject exception = new JSONObject();
+                exception.put("exception", "Error: Object was not found");
+                exception.put("status", "error");
+                return exception.toString();
             }
 
         });
@@ -111,14 +124,22 @@ public class ControllerIO {
                 Validator.Result result = validator.validate(postProjectSchema, stringJson);
                 if (!result.isValid()) {
                     response.status(400);
-                    return "Error: wrong input parameters: ";
+                    JSONObject exception = new JSONObject();
+                    exception.put("exception", "Error: wrong input parameters: ");
+                    exception.put("status", "error");
+                    return exception.toString();
                 }
                 controllerDB.createNewProject(jsonObject);
                 response.status(200);
-                return "Created projectId: " + jsonObject.get("id");
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                return obj.toString();
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
 
@@ -132,14 +153,23 @@ public class ControllerIO {
                 Validator.Result result = validator.validate(postTaskSchema, stringJson);
                 if (!result.isValid()) {
                     response.status(400);
-                    return "Error: wrong input parameters: ";
+                    JSONObject exception = new JSONObject();
+                    exception.put("exception", "Error: wrong input parameters: ");
+                    exception.put("status", "error");
+                    return exception.toString();
                 }
                 controllerDB.createNewTask(jsonObject, projectId);
                 response.status(200);
-                return "Created taskId: " + jsonObject.get("id") + ", added to a project: " + projectId;
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                return obj.toString();
+
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
 
         });
@@ -150,17 +180,25 @@ public class ControllerIO {
             Validator.Result result = validator.validate(postDeveloperSchema, stringJson);
             if (!result.isValid()) {
                 response.status(400);
-                return "Error: wrong input parameters: ";
+                JSONObject exception = new JSONObject();
+                exception.put("exception", "Error: wrong input parameters: ");
+                exception.put("status", "error");
+                return exception.toString();
             }
 
             try {
                 JSONObject jsonObject = new JSONObject(stringJson);
                 controllerDB.createNewDeveloper(jsonObject);
                 response.status(200);
-                return "Created developerId: " + jsonObject.get("id");
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                return obj.toString();
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
 
@@ -174,14 +212,25 @@ public class ControllerIO {
                 Validator.Result result = validator.validate(postAssignmentSchema, stringJson);
                 if (!result.isValid()) {
                     response.status(400);
-                    return "Error: wrong input parameters: ";
+                    JSONObject exception = new JSONObject();
+                    exception.put("exception", "Error: wrong input parameters: ");
+                    exception.put("status", "error");
+                    return exception.toString();
                 }
-                JSONArray array = controllerDB.createAssignments(projectId, jsonObject);
+                ArrayList<JSONObject> array = controllerDB.createAssignments(projectId, jsonObject);
+                JSONObject resp = new JSONObject();
+                resp.put("assignments", array);
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                obj.put("result",resp);
                 response.status(200);
-                return array.toString();
+                return obj.toString();
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
     }
@@ -214,14 +263,22 @@ public class ControllerIO {
                 Validator.Result result = validator.validate(putTaskSchema, stringJson);
                 if (!result.isValid()) {
                     response.status(400);
-                    return "Error: wrong input parameters: ";
+                    JSONObject exception = new JSONObject();
+                    exception.put("exception", "Error: wrong input parameters: ");
+                    exception.put("status", "error");
+                    return exception.toString();
                 }
                 controllerDB.EditTask(projectId, taskId, jsonObject);
                 response.status(200);
-                return "Status updated";
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                return obj.toString();
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
 
@@ -236,14 +293,23 @@ public class ControllerIO {
                 Validator.Result result = validator.validate(putAssignmentSchema, stringJson);
                 if (!result.isValid()) {
                     response.status(400);
-                    return "Error: wrong input parameters: ";
+                    JSONObject exception = new JSONObject();
+                    exception.put("exception", "Error: wrong input parameters: ");
+                    exception.put("status", "error");
+                    return exception.toString();
                 }
                 controllerDB.decideDelegationOfTasks(assignmentId, projectId, jsonObject);
                 response.status(200);
-                return "Assignment is complete";
+                JSONObject obj = new JSONObject();
+                obj.put("status", "complete");
+                return obj.toString();
+
             } catch (RuntimeException err) {
                 response.status(400);
-                return err.getMessage();
+                JSONObject exception = new JSONObject();
+                exception.put("exception", err.getMessage());
+                exception.put("status", "error");
+                return exception.toString();
             }
         });
     }

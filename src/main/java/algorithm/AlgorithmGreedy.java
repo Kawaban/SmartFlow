@@ -8,7 +8,8 @@ import baseObjects.Task;
 
 import java.util.ArrayList;
 import java.util.Map;
-
+//According to Weighted Shortest Job First conception shorter estimation tasks have higher priority
+//O(n^2)
 public class AlgorithmGreedy implements Algorithm {
     class Comparator implements java.util.Comparator<Task> {
 
@@ -16,8 +17,11 @@ public class AlgorithmGreedy implements Algorithm {
         public int compare(Task o1, Task o2) {
             if (o1.getEstimation() < o2.getEstimation())
                 return 1;
+            else if(o1.getEstimation() == o2.getEstimation())
+                return 0;
             else
                 return -1;
+
         }
     }
 
