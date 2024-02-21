@@ -32,6 +32,7 @@ public class ControllerDB {
         cfg.addAnnotatedClass(Project.class);
         cfg.addAnnotatedClass(TaskLog.class);
         cfg.addAnnotatedClass(Assignment.class);
+        //test
         StandardServiceRegistryBuilder sb = new StandardServiceRegistryBuilder();
         sb.applySettings(cfg.getProperties());
         StandardServiceRegistry standardServiceRegistry = sb.build();
