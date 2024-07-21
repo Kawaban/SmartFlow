@@ -1,21 +1,26 @@
 package api.task.domain;
 
 import api.developer.domain.DeveloperRepository;
+import api.infrastructure.exception.EntityNotFoundException;
+import api.infrastructure.model.FibonacciChecker;
 import api.infrastructure.model.Specialization;
 import api.infrastructure.model.TaskState;
-import api.infrastructure.exception.EntityNotFoundException;
 import api.project.domain.ProjectRepository;
 import api.task.dto.TaskChange;
 import api.task.dto.TaskRequest;
 import api.task.dto.TaskResponse;
+import jakarta.persistence.OptimisticLockException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
-public record TaskService(TaskRepository taskRepository, DeveloperRepository developerRepository, ProjectRepository projectRepository, TaskLogRepository taskLogRepository) {
-    public TaskResponse getTask(UUID taskId) {
+public record TaskService(TaskRepository taskRepository, DeveloperRepository developerRepository,
+                          ProjectRepository projectRepository, TaskLogRepository taskLogRepository,
+                          FibonacciChecker fibonacciChecker) {
+
+    public TaskResponse getTask(UUID taskId) throws EntityNotFoundException {
         return taskRepository.findById(taskId)
                 .map(task -> TaskResponse.builder()
                         .taskId(task.getUuid())
@@ -33,7 +38,12 @@ public record TaskService(TaskRepository taskRepository, DeveloperRepository dev
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    public void addTask(UUID projectId, TaskRequest taskRequest) {
+    public void addTask(UUID projectId, TaskRequest taskRequest) throws EntityNotFoundException, IllegalArgumentException {
+
+        if (fibonacciChecker.isFibonacci(taskRequest.estimation())) {
+            throw new IllegalArgumentException("Estimation is not a fibonacci number");
+        }
+
         Task task = Task.builder().
                 name(taskRequest.name()).
                 description(taskRequest.description()).
@@ -49,11 +59,11 @@ public record TaskService(TaskRepository taskRepository, DeveloperRepository dev
         taskRepository.save(task);
     }
 
-    public void updateTaskStatus(UUID projectId, UUID taskId, TaskChange taskChange) {
+    public void updateTaskStatus(UUID projectId, UUID taskId, TaskChange taskChange) throws EntityNotFoundException, OptimisticLockException, IllegalArgumentException {
         Task task = taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
         task.setTaskState(TaskState.valueOf(taskChange.status()));
 
-        if(TaskState.valueOf(taskChange.status()) == TaskState.COMPLETED || TaskState.valueOf(taskChange.status()) == TaskState.FAILED) {
+        if (TaskState.valueOf(taskChange.status()) == TaskState.COMPLETED || TaskState.valueOf(taskChange.status()) == TaskState.FAILED) {
             TaskLog taskLog = TaskLog.builder()
                     .endAt(LocalDate.now())
                     .createdAt(task.getCreatedAt())
@@ -74,7 +84,6 @@ public record TaskService(TaskRepository taskRepository, DeveloperRepository dev
 
         taskRepository.save(task);
     }
-
 
 
 }

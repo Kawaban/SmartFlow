@@ -12,7 +12,7 @@ public record TaskRequest(@NonNull String name,
                           @NonNull UUID createdBy,
                           @NonNull String createdAt,
                           @NonNull String deadline,
-                          @NonNull int estimation,
+                          int estimation,
                           @NonNull String specialization,
                           UUID assignedTo) {
 }

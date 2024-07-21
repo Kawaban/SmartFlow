@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 public record DeveloperService(DeveloperRepository developerRepository) {
 
-    public DeveloperResponse getDevelopers(UUID userId) {
+    public DeveloperResponse getDevelopers(UUID userId) throws EntityNotFoundException {
         val developer = developerRepository.findByDeveloperId(userId)
                 .orElseThrow(EntityNotFoundException::new);
 

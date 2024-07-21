@@ -22,7 +22,7 @@ import java.util.*;
 @Service
 record AssignmentService(Algorithm algorithm, ProjectRepository projectRepository, AssignmentRepository assignmentRepository, TaskRepository taskRepository, DeveloperRepository developerRepository) implements api.assignment.AssignmentService {
 
-    public void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision) {
+    public void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision) throws EntityNotFoundException {
         Assignment assignment = assignmentRepository.findByAssignmentId(assignmentId).orElseThrow(EntityNotFoundException::new);
 
         if (assignmentDecision.isAccepted()) {
@@ -52,11 +52,10 @@ record AssignmentService(Algorithm algorithm, ProjectRepository projectRepositor
             assignmentRepository.delete(assignment);
         }
 
-
     }
 
 
-    public ArrayList<AssignmentResponse> delegateTasks(UUID projectId) {
+    public ArrayList<AssignmentResponse> delegateTasks(UUID projectId) throws EntityNotFoundException {
         val project = projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new);
         ArrayList<Assignment> updateInstances = new ArrayList<Assignment>();
 

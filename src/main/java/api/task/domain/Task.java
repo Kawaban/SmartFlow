@@ -1,19 +1,16 @@
 package api.task.domain;
 
 
-import api.infrastructure.model.Specialization;
-import api.infrastructure.model.TaskState;
 import api.developer.domain.Developer;
 import api.infrastructure.model.AbstractEntity;
+import api.infrastructure.model.Specialization;
+import api.infrastructure.model.TaskState;
 import api.project.domain.Project;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.time.LocalDate;

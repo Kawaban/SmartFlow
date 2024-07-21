@@ -1,16 +1,14 @@
 package api.task.domain;
 
 
-
-import api.infrastructure.model.TaskState;
 import api.developer.domain.Developer;
 import api.infrastructure.model.AbstractEntity;
+import api.infrastructure.model.TaskState;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 
 import java.time.Instant;
 import java.time.LocalDate;
