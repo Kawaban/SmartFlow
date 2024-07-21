@@ -1,0 +1,27 @@
+package api.task.domain;
+
+import api.task.dto.TaskChange;
+import api.task.dto.TaskRequest;
+import api.task.dto.TaskResponse;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/projects/{projectId}/tasks")
+public record TaskController(TaskService taskService) {
+    @GetMapping("/{taskId}")
+    public TaskResponse getTask(@PathVariable UUID projectId, @PathVariable UUID taskId) {
+        return taskService.getTask(taskId);
+    }
+
+    @PostMapping
+    public void addTask(@PathVariable UUID projectId, @RequestBody TaskRequest taskRequest) {
+        taskService.addTask(projectId, taskRequest);
+    }
+
+    @PutMapping("/{taskId}")
+    public void updateTaskStatus(@PathVariable UUID projectId, @PathVariable UUID taskId, @RequestBody TaskChange taskChange) {
+        taskService.updateTaskStatus(projectId, taskId, taskChange);
+    }
+}

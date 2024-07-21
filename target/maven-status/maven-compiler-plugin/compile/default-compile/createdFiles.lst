@@ -1,8 +1,0 @@
-additionalObjects\Specialization.class
-additionalObjects\TaskState.class
-baseObjects\Task.class
-Controllers\TaskDelegator.class
-baseObjects\Project.class
-Controllers\ControllerIO.class
-baseObjects\Developer.class
-Controllers\ControllerDB.class
