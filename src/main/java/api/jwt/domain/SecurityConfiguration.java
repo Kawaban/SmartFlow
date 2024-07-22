@@ -1,4 +1,4 @@
-package api.jwt;
+package api.jwt.domain;
 
 
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration {
+    private static final String[] WHITE_LIST_URL = {"/api/authentication/**"};
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
-
-    private static final String[] WHITE_LIST_URL = {"/api/authentication/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

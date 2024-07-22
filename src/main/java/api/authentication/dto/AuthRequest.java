@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 
 public record AuthRequest(@NotEmpty String login, @NotNull char[] password) {
-    public void zeroPassword(){
+    public void zeroPassword() {
         Arrays.fill(password, (char) 0);
     }
 
-    public String getPasswordAsString(){
+    public String getPasswordAsString() {
         return new String(password);
     }
 }

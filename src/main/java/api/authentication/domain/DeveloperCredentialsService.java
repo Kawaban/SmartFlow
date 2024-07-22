@@ -1,17 +1,18 @@
 package api.authentication.domain;
 
 import api.infrastructure.exception.EntityNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public record DeveloperCredentialsService(DeveloperCredentialsRepository developerCredentialsRepository) {
+record DeveloperCredentialsService(DeveloperCredentialsRepository developerCredentialsRepository) {
 
-        public Boolean existsByLogin(String login) {
-            return developerCredentialsRepository.existsByUsername(login);
-        }
+    public Boolean existsByLogin(String login) {
+        return developerCredentialsRepository.existsByUsername(login);
+    }
 
-        public DeveloperCredentials findByLogin(String login) {
-            return developerCredentialsRepository.findByUsername(login)
-                    .orElseThrow(EntityNotFoundException::new);
-        }
+    public UserDetails findByLogin(String login) throws EntityNotFoundException {
+        return developerCredentialsRepository.findByUsername(login)
+                .orElseThrow(EntityNotFoundException::new);
+    }
 }

@@ -22,7 +22,7 @@ class Assignment extends AbstractEntity {
     private UUID taskId;
 
     @Builder
-    public Assignment(UUID id, long version, Instant createdDate,Instant lastModifiedDate, UUID projectId, UUID developerId, UUID taskId) {
+    public Assignment(UUID id, long version, Instant createdDate, Instant lastModifiedDate, UUID projectId, UUID developerId, UUID taskId) {
         super(id, version, createdDate, lastModifiedDate);
         this.developerId = developerId;
         this.taskId = taskId;

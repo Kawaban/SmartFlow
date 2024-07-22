@@ -1,11 +1,11 @@
 package api.task.domain;
 
-import api.developer.domain.DeveloperRepository;
+import api.developer.DeveloperService;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.infrastructure.model.FibonacciChecker;
 import api.infrastructure.model.Specialization;
 import api.infrastructure.model.TaskState;
-import api.project.domain.ProjectRepository;
+import api.project.ProjectService;
 import api.task.dto.TaskChange;
 import api.task.dto.TaskRequest;
 import api.task.dto.TaskResponse;
@@ -16,9 +16,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
-public record TaskService(TaskRepository taskRepository, DeveloperRepository developerRepository,
-                          ProjectRepository projectRepository, TaskLogRepository taskLogRepository,
-                          FibonacciChecker fibonacciChecker) {
+record TaskService(TaskRepository taskRepository, DeveloperService developerService,
+                   ProjectService projectService, TaskLogRepository taskLogRepository,
+                   FibonacciChecker fibonacciChecker) implements api.task.TaskService {
 
     public TaskResponse getTask(UUID taskId) throws EntityNotFoundException {
         return taskRepository.findById(taskId)
@@ -51,10 +51,10 @@ public record TaskService(TaskRepository taskRepository, DeveloperRepository dev
                 createdBy(taskRequest.createdBy()).
                 createdAt(LocalDate.parse(taskRequest.createdAt())).
                 deadline(LocalDate.parse(taskRequest.deadline())).
-                assignedTo(developerRepository.findByDeveloperId(taskRequest.assignedTo()).orElseThrow(EntityNotFoundException::new)).
+                assignedTo(developerService.findByDeveloperId(taskRequest.assignedTo())).
                 estimation(taskRequest.estimation()).
                 specialization(Specialization.valueOf(taskRequest.specialization())).
-                project(projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new)).
+                project(projectService.findByProjectId(projectId)).
                 build();
         taskRepository.save(task);
     }
@@ -82,6 +82,14 @@ public record TaskService(TaskRepository taskRepository, DeveloperRepository dev
             taskRepository.delete(task);
         }
 
+        taskRepository.save(task);
+    }
+
+    public Task findByTaskId(UUID taskId) throws EntityNotFoundException {
+        return taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public void updateTask(Task task) throws OptimisticLockException {
         taskRepository.save(task);
     }
 

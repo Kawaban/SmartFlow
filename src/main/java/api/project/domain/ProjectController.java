@@ -17,7 +17,7 @@ public record ProjectController(ProjectService projectService) {
     }
 
     @PostMapping
-    public void addProject(@RequestBody ProjectRequest projectResponse){
+    public void addProject(@RequestBody ProjectRequest projectResponse) {
         projectService.addProject(projectResponse);
     }
 

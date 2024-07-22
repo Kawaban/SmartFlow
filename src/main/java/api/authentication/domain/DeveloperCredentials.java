@@ -6,15 +6,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Table(name = "developer_credentials")
-public class DeveloperCredentials extends AbstractEntity {
+class DeveloperCredentials extends AbstractEntity implements UserDetails {
     private String username;
     private String password;
 
@@ -23,5 +27,30 @@ public class DeveloperCredentials extends AbstractEntity {
         super(id, version, createdDate, lastModifiedDate);
         this.username = username;
         this.password = password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

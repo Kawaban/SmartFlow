@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
-public record ProjectService(ProjectRepository projectRepository) {
+record ProjectService(ProjectRepository projectRepository) implements api.project.ProjectService {
 
     public ProjectResponse getProject(UUID projectId) throws EntityNotFoundException {
         val project = projectRepository.findById(projectId)
@@ -33,4 +33,9 @@ public record ProjectService(ProjectRepository projectRepository) {
                 .build();
         projectRepository.save(project);
     }
+
+    public Project findByProjectId(UUID projectId) throws EntityNotFoundException {
+        return projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new);
+    }
+
 }

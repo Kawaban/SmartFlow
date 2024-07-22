@@ -4,13 +4,14 @@ import api.developer.dto.DeveloperRequest;
 import api.developer.dto.DeveloperResponse;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.infrastructure.model.Specialization;
+import jakarta.persistence.OptimisticLockException;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public record DeveloperService(DeveloperRepository developerRepository) {
+record DeveloperService(DeveloperRepository developerRepository) implements api.developer.DeveloperService {
 
     public DeveloperResponse getDevelopers(UUID userId) throws EntityNotFoundException {
         val developer = developerRepository.findByDeveloperId(userId)
@@ -35,4 +36,13 @@ public record DeveloperService(DeveloperRepository developerRepository) {
     public Developer loadDeveloperByUsername(String username) throws EntityNotFoundException {
         return developerRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
+
+    public Developer findByDeveloperId(UUID userId) throws EntityNotFoundException {
+        return developerRepository.findByDeveloperId(userId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public void updateDeveloper(Developer developer) throws OptimisticLockException {
+        developerRepository.save(developer);
+    }
+
 }

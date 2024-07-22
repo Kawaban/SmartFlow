@@ -7,19 +7,11 @@ import java.util.UUID;
 
 @Data
 public class Rank {
+    private final static double CONST_DEFAULT_RANK = 3.0;
     private int estimation;
     private double value;
     private int power;
-
     private UUID developerID;
-
-    private final static double CONST_DEFAULT_RANK = 3.0;
-
-    @Override
-    public boolean equals(Object obj) {
-        Rank other = (Rank) obj;
-        return other.getEstimation() == estimation;
-    }
 
     public Rank(int estimation, double value, UUID developerID) {
         this.estimation = estimation;
@@ -33,6 +25,12 @@ public class Rank {
         this.value = 0;
         this.power = 0;
         this.developerID = developerID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Rank other = (Rank) obj;
+        return other.getEstimation() == estimation;
     }
 
     public void setDefaultRank() {

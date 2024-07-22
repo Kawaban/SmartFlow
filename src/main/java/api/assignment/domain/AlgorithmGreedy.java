@@ -11,20 +11,6 @@ import java.util.ArrayList;
 //O(n^2)
 @Component
 class AlgorithmGreedy implements Algorithm {
-    class Comparator implements java.util.Comparator<Task> {
-
-        @Override
-        public int compare(Task o1, Task o2) {
-            if (o1.getEstimation() < o2.getEstimation())
-                return 1;
-            else if(o1.getEstimation() == o2.getEstimation())
-                return 0;
-            else
-                return -1;
-
-        }
-    }
-
     @Override
     public ArrayList<Assignment> delegate(ArrayList<Task> tasks, ArrayList<Developer> developers) {
         tasks.sort(new Comparator());
@@ -50,6 +36,20 @@ class AlgorithmGreedy implements Algorithm {
 
         }
         return assignments;
+    }
+
+    class Comparator implements java.util.Comparator<Task> {
+
+        @Override
+        public int compare(Task o1, Task o2) {
+            if (o1.getEstimation() < o2.getEstimation())
+                return 1;
+            else if (o1.getEstimation() == o2.getEstimation())
+                return 0;
+            else
+                return -1;
+
+        }
     }
 
 

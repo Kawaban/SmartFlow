@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface AssignmentService {
     void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision);
+
     ArrayList<AssignmentResponse> delegateTasks(UUID projectId);
 }

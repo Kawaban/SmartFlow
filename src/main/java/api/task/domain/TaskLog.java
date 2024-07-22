@@ -22,6 +22,14 @@ import java.util.UUID;
 @Table(name = "task_logs")
 public class TaskLog extends AbstractEntity {
 
+    @Transient
+    private final static double CONST_RANK_FAILED = 0;
+    @Transient
+    private final static double CONST_RANK_COMPLETE_HIGH = 5.5;
+    @Transient
+    private final static double CONST_RANK_COMPLETE_LOW = 2.0;
+    @Transient
+    private final static double CONST_RANK_COMPLETE_EXPIRED = 1.0;
     @Column(name = "project_id")
     private UUID projectId;
     private String name;
@@ -40,15 +48,6 @@ public class TaskLog extends AbstractEntity {
     private TaskState taskState;
     @Column(name = "estimation")
     private int estimation;
-    @Transient
-    private final static double CONST_RANK_FAILED = 0;
-    @Transient
-    private final static double CONST_RANK_COMPLETE_HIGH = 5.5;
-    @Transient
-    private final static double CONST_RANK_COMPLETE_LOW = 2.0;
-
-    @Transient
-    private final static double CONST_RANK_COMPLETE_EXPIRED = 1.0;
 
     @Builder
     public TaskLog(UUID id, long version, Instant createdDate, Instant lastModifiedDate, UUID projectId, Developer developer, LocalDate deadline, LocalDate endAt, LocalDate createdAt, TaskState taskState, int estimation, String name, String description) {

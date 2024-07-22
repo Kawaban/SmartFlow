@@ -1,4 +1,4 @@
-package api.jwt;
+package api.jwt.domain;
 
 import api.jwt.dto.JwtUser;
 import jakarta.servlet.FilterChain;

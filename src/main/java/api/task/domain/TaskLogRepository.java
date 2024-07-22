@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface TaskLogRepository extends JpaRepository<TaskLog, UUID> {
+interface TaskLogRepository extends JpaRepository<TaskLog, UUID> {
 }

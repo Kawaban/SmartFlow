@@ -3,15 +3,16 @@ package api.assignment.domain;
 
 import api.assignment.dto.AssignmentDecision;
 import api.assignment.dto.AssignmentResponse;
+import api.developer.DeveloperService;
 import api.developer.domain.Developer;
-import api.developer.domain.DeveloperRepository;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.infrastructure.model.Specialization;
 import api.infrastructure.model.TaskState;
+import api.project.ProjectService;
 import api.project.domain.Project;
-import api.project.domain.ProjectRepository;
+import api.task.TaskService;
 import api.task.domain.Task;
-import api.task.domain.TaskRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -19,33 +20,35 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
-record AssignmentService(Algorithm algorithm, ProjectRepository projectRepository, AssignmentRepository assignmentRepository, TaskRepository taskRepository, DeveloperRepository developerRepository) implements api.assignment.AssignmentService {
+record AssignmentService(Algorithm algorithm, ProjectService projectService, AssignmentRepository assignmentRepository,
+                         TaskService taskService,
+                         DeveloperService developerService) implements api.assignment.AssignmentService {
 
-    public void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision) throws EntityNotFoundException {
+    public void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision) throws EntityNotFoundException, OptimisticLockException {
         Assignment assignment = assignmentRepository.findByAssignmentId(assignmentId).orElseThrow(EntityNotFoundException::new);
 
         if (assignmentDecision.isAccepted()) {
-            Task task = taskRepository.findById(assignment.getTaskId()).orElseThrow(EntityNotFoundException::new);
-            Developer developer = developerRepository.findById(assignment.getDeveloperId()).orElseThrow(EntityNotFoundException::new);
+            Task task = taskService.findByTaskId(assignment.getTaskId());
+            Developer developer = developerService.findByDeveloperId(assignment.getDeveloperId());
 
-            if(task.getAssignedTo() != null) {
+            if (task.getAssignedTo() != null) {
                 Developer previousDeveloper = task.getAssignedTo();
                 previousDeveloper.setTask(null);
-                developerRepository.save(previousDeveloper);
+                developerService.updateDeveloper(previousDeveloper);
             }
 
             if (developer.getTask() != null) {
                 Task previousTask = developer.getTask();
                 previousTask.setAssignedTo(null);
-                taskRepository.save(previousTask);
+                taskService.updateTask(previousTask);
             }
 
             task.setAssignedTo(developer);
             developer.setTask(task);
             task.setTaskState(TaskState.ASSIGNED);
 
-            taskRepository.save(task);
-            developerRepository.save(developer);
+            taskService.updateTask(task);
+            developerService.updateDeveloper(developer);
 
         } else {
             assignmentRepository.delete(assignment);
@@ -55,7 +58,7 @@ record AssignmentService(Algorithm algorithm, ProjectRepository projectRepositor
 
 
     public ArrayList<AssignmentResponse> delegateTasks(UUID projectId) throws EntityNotFoundException {
-        val project = projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new);
+        val project = projectService.findByProjectId(projectId);
         ArrayList<Assignment> updateInstances = new ArrayList<Assignment>();
 
         ArrayList<ArrayList<Task>> tasks = sortTasksBySpecialization(project);
@@ -64,13 +67,13 @@ record AssignmentService(Algorithm algorithm, ProjectRepository projectRepositor
         for (int i = 0; i < Specialization.values().length; i++)
             updateInstances.addAll(delegate(tasks.get(i), developers.get(i)));
 
-        ArrayList<AssignmentResponse> assignmentResponses =new ArrayList<>();
+        ArrayList<AssignmentResponse> assignmentResponses = new ArrayList<>();
         for (Assignment assignment : updateInstances) {
             assignmentResponses.add(AssignmentResponse.builder()
-                                                      .taskId(assignment.getTaskId())
-                                                      .developerId(assignment.getDeveloperId())
-                                                      .assignmentId(assignment.getUuid())
-                                                      .build());
+                    .taskId(assignment.getTaskId())
+                    .developerId(assignment.getDeveloperId())
+                    .assignmentId(assignment.getUuid())
+                    .build());
         }
 
         return assignmentResponses;
@@ -83,7 +86,7 @@ record AssignmentService(Algorithm algorithm, ProjectRepository projectRepositor
         ///3 UX/UI
         ArrayList<ArrayList<Task>> tasks = new ArrayList<ArrayList<Task>>();
         for (int i = 0; i < Specialization.values().length; i++)
-            tasks.add(new ArrayList<Task>());
+            tasks.add(new ArrayList<>());
 
         for (Task task : project.getTasks()) {
             if (task.getAssignedTo() == null && task.getTaskState() == TaskState.DEFAULT) {
@@ -113,7 +116,7 @@ record AssignmentService(Algorithm algorithm, ProjectRepository projectRepositor
         ///3 UX/UI
         ArrayList<ArrayList<Developer>> developers = new ArrayList<ArrayList<Developer>>();
         for (int i = 0; i < Specialization.values().length; i++)
-            developers.add(new ArrayList<Developer>());
+            developers.add(new ArrayList<>());
 
         for (Developer developer : project.getProjectDevelopers()) {
             if (developer.getTask() == null) {

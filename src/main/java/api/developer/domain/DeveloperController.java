@@ -16,7 +16,7 @@ public record DeveloperController(DeveloperService developerService) {
     }
 
     @PostMapping
-    public void addDeveloper (@RequestBody DeveloperRequest developerRequest) throws IllegalArgumentException {
+    public void addDeveloper(@RequestBody DeveloperRequest developerRequest) throws IllegalArgumentException {
         developerService.addDeveloper(developerRequest);
     }
 }

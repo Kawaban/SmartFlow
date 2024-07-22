@@ -21,8 +21,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Project extends AbstractEntity {
 
-    @Column(name = "name")
-    private String name;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "projects_developers",
@@ -32,6 +30,8 @@ public class Project extends AbstractEntity {
     List<Developer> projectDevelopers;
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     List<Task> tasks;
+    @Column(name = "name")
+    private String name;
 
     @Builder
     public Project(UUID id, long version, Instant createdDate, Instant lastModifiedDate, String name, ArrayList<Developer> projectDevelopers) {
