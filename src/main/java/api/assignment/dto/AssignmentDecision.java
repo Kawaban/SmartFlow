@@ -1,6 +1,6 @@
 package api.assignment.dto;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 
-public record AssignmentDecision(@NonNull Boolean isAccepted) {
+public record AssignmentDecision(@NotNull Boolean isAccepted) {
 }

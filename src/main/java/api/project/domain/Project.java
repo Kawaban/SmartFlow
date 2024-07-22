@@ -1,15 +1,13 @@
 package api.project.domain;
 
-import api.task.domain.Task;
 import api.developer.domain.Developer;
 import api.infrastructure.model.AbstractEntity;
+import api.task.domain.Task;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-
 
 import java.time.Instant;
 import java.util.ArrayList;

@@ -1,23 +1,22 @@
 package api.assignment.domain;
 
 
-
-
-import api.developer.domain.DeveloperRepository;
-import api.infrastructure.model.Specialization;
-import api.infrastructure.model.TaskState;
-import api.developer.domain.Developer;
-import api.infrastructure.exception.EntityNotFoundException;
-import api.project.domain.Project;
-import api.project.domain.ProjectRepository;
 import api.assignment.dto.AssignmentDecision;
 import api.assignment.dto.AssignmentResponse;
+import api.developer.domain.Developer;
+import api.developer.domain.DeveloperRepository;
+import api.infrastructure.exception.EntityNotFoundException;
+import api.infrastructure.model.Specialization;
+import api.infrastructure.model.TaskState;
+import api.project.domain.Project;
+import api.project.domain.ProjectRepository;
 import api.task.domain.Task;
 import api.task.domain.TaskRepository;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.UUID;
 
 @Service
 record AssignmentService(Algorithm algorithm, ProjectRepository projectRepository, AssignmentRepository assignmentRepository, TaskRepository taskRepository, DeveloperRepository developerRepository) implements api.assignment.AssignmentService {

@@ -1,6 +1,6 @@
 package api.task.dto;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 
-public record TaskChange(@NonNull String status) {
+public record TaskChange(@NotNull String status) {
 }

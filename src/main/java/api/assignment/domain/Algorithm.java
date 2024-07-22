@@ -1,10 +1,8 @@
 package api.assignment.domain;
 
 
-
 import api.developer.domain.Developer;
 import api.task.domain.Task;
-
 
 import java.util.ArrayList;
 

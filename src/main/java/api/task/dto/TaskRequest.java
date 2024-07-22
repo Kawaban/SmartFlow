@@ -1,18 +1,18 @@
 package api.task.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.NonNull;
 
 import java.util.UUID;
 
 @Builder
-public record TaskRequest(@NonNull String name,
-                          @NonNull String description,
-                          @NonNull String status,
-                          @NonNull UUID createdBy,
-                          @NonNull String createdAt,
-                          @NonNull String deadline,
-                          int estimation,
-                          @NonNull String specialization,
+public record TaskRequest(@NotNull String name,
+                          @NotNull String description,
+                          @NotNull String status,
+                          @NotNull UUID createdBy,
+                          @NotNull String createdAt,
+                          @NotNull String deadline,
+                          @NotNull int estimation,
+                          @NotNull String specialization,
                           UUID assignedTo) {
 }

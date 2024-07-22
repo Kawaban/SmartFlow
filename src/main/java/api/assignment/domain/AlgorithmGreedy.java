@@ -1,10 +1,9 @@
 package api.assignment.domain;
 
-import api.infrastructure.model.Rank;
 import api.developer.domain.Developer;
+import api.infrastructure.model.Rank;
 import api.task.domain.Task;
 import org.springframework.stereotype.Component;
-
 
 import java.util.ArrayList;
 

@@ -1,21 +1,19 @@
 package api.developer.domain;
 
 
+import api.infrastructure.model.AbstractEntity;
 import api.infrastructure.model.Rank;
 import api.infrastructure.model.Specialization;
 import api.project.domain.Project;
 import api.task.domain.Task;
 import api.task.domain.TaskLog;
-import api.infrastructure.model.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
 import java.time.Instant;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +34,8 @@ public class Developer extends AbstractEntity {
     )
     private List<Project> projects;
 
+    private String username;
+
     @OneToOne
     @JoinColumn(name = "task_id")
     private Task task;
@@ -47,9 +47,10 @@ public class Developer extends AbstractEntity {
     private List<TaskLog> tasksLogs;
 
     @Builder
-    public Developer(UUID id, long version, Instant createdDate, Instant lastModifiedDate, Specialization specialization) {
+    public Developer(UUID id, long version, Instant createdDate, Instant lastModifiedDate, Specialization specialization, String username) {
         super(id, version, createdDate, lastModifiedDate);
         this.specialization = specialization;
+        this.username = username;
     }
 
     public Rank calculateRank(int estimation) {

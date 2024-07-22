@@ -1,9 +1,9 @@
 package api.developer.domain;
 
-import api.infrastructure.model.Specialization;
 import api.developer.dto.DeveloperRequest;
 import api.developer.dto.DeveloperResponse;
 import api.infrastructure.exception.EntityNotFoundException;
+import api.infrastructure.model.Specialization;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +30,9 @@ public record DeveloperService(DeveloperRepository developerRepository) {
                 .specialization(Specialization.valueOf(developerRequest.specialization()))
                 .build();
         developerRepository.save(developer);
+    }
+
+    public Developer loadDeveloperByUsername(String username) throws EntityNotFoundException {
+        return developerRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
     }
 }

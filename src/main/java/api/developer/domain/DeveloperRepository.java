@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface DeveloperRepository extends JpaRepository<Developer, UUID> {
     Optional<Developer> findByDeveloperId(UUID userId);
+
+    Optional<Developer> findByUsername(String username);
 }

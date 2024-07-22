@@ -3,11 +3,11 @@ package api.infrastructure.exception;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @RestControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
@@ -52,6 +52,18 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(OptimisticLockException.class)
     public ResponseEntity<ApiErrorWrapper> handleOptimisticLockException(OptimisticLockException ex, WebRequest request) {
+        final String uri = extractRequestUri(request);
+        final ApiError apiError = ApiError.builder()
+                .path(uri)
+                .statusCode(HttpStatus.CONFLICT.value())
+                .status(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(HttpStatus.CONFLICT.getReasonPhrase())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiErrorWrapper(apiError));
+    }
+
+    @ExceptionHandler(DeveloperAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorWrapper> handleDeveloperAlreadyExistsException(DeveloperAlreadyExistsException ex, WebRequest request) {
         final String uri = extractRequestUri(request);
         final ApiError apiError = ApiError.builder()
                 .path(uri)

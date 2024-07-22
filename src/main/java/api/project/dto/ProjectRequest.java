@@ -1,9 +1,9 @@
 package api.project.dto;
 
 import api.developer.domain.Developer;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record ProjectRequest(@NonNull String projectName, List<Developer> developers) {
+public record ProjectRequest(@NotNull String projectName, List<Developer> developers) {
 }
