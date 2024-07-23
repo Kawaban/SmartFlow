@@ -33,6 +33,8 @@ record AuthenticateService(DeveloperCredentialsService developerCredentialsServi
             throw new DeveloperAlreadyExistsException();
         }
 
+
+
         val developerRequest = DeveloperRequest.builder()
                 .login(developerCredentialsRequest.login())
                 .specialization(developerCredentialsRequest.specialization())
