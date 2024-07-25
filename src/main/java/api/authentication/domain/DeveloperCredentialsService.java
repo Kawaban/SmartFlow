@@ -7,18 +7,15 @@ import api.developer.dto.DeveloperRequest;
 import api.infrastructure.exception.EntityNotFoundException;
 import lombok.val;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-record DeveloperCredentialsService(DeveloperCredentialsRepository developerCredentialsRepository, DeveloperService developerService) {
+record DeveloperCredentialsService(DeveloperCredentialsRepository developerCredentialsRepository, DeveloperService developerService) implements UserDetailsService {
 
     public Boolean existsByLogin(String login) {
         return developerCredentialsRepository.existsByUsername(login);
-    }
-
-    public UserDetails findByLogin(String login) throws EntityNotFoundException {
-        return developerCredentialsRepository.findByUsername(login)
-                .orElseThrow(EntityNotFoundException::new);
     }
 
     public void addDeveloperCredentials(DeveloperCredentials developerCredentials) {
@@ -42,5 +39,11 @@ record DeveloperCredentialsService(DeveloperCredentialsRepository developerCrede
                 .developer(developer)
                 .build());
 
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return developerCredentialsRepository.findByUsername(username)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

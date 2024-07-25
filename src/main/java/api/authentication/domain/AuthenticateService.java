@@ -20,7 +20,7 @@ record AuthenticateService(DeveloperCredentialsService developerCredentialsServi
                            JwtService jwtService) implements api.authentication.AuthenticateService {
 
     public AuthResponse login(AuthRequest request) throws EntityNotFoundException {
-        val developer = developerCredentialsService.findByLogin(request.login());
+        val developer = developerCredentialsService.loadUserByUsername(request.login());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.login(), request.password(), developer.getAuthorities()));
         String token = jwtService().generateToken(new JwtUser(developer.getUsername()));
