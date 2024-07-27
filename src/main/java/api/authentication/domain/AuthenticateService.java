@@ -15,7 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 @Service
-record AuthenticateService(DeveloperCredentialsService developerCredentialsService, DeveloperService developerService,
+record AuthenticateService(DeveloperCredentialsService developerCredentialsService, DeveloperCredentialsService developerService,
                            AuthenticationManager authenticationManager,
                            JwtService jwtService) implements api.authentication.AuthenticateService {
 
@@ -23,7 +23,7 @@ record AuthenticateService(DeveloperCredentialsService developerCredentialsServi
         val developer = developerCredentialsService.loadUserByUsername(request.login());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.login(), request.password(), developer.getAuthorities()));
-        String token = jwtService().generateToken(new JwtUser(developer.getUsername()));
+        val token = jwtService().generateToken(new JwtUser(developer.getUsername()));
         request.zeroPassword();
         return new AuthResponse(token);
     }
@@ -33,13 +33,6 @@ record AuthenticateService(DeveloperCredentialsService developerCredentialsServi
             throw new DeveloperAlreadyExistsException();
         }
 
-
-
-        val developerRequest = DeveloperRequest.builder()
-                .login(developerCredentialsRequest.login())
-                .specialization(developerCredentialsRequest.specialization())
-                .build();
-
-        developerService.addDeveloper(developerRequest);
+        developerCredentialsService.createDeveloper(developerCredentialsRequest);
     }
 }

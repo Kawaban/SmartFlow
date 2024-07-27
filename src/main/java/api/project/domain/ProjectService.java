@@ -35,7 +35,7 @@ record ProjectService(ProjectRepository projectRepository) implements api.projec
     }
 
     public Project findByProjectId(UUID projectId) throws EntityNotFoundException {
-        return projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new);
+        return projectRepository.findByUuid(projectId).orElseThrow(EntityNotFoundException::new);
     }
 
 }

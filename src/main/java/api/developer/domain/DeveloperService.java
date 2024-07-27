@@ -14,7 +14,7 @@ import java.util.UUID;
 record DeveloperService(DeveloperRepository developerRepository) implements api.developer.DeveloperService {
 
     public DeveloperResponse getDevelopers(UUID userId) throws EntityNotFoundException {
-        val developer = developerRepository.findByDeveloperId(userId)
+        val developer = developerRepository.findByUuid(userId)
                 .orElseThrow(EntityNotFoundException::new);
 
         return DeveloperResponse.builder()
@@ -38,7 +38,7 @@ record DeveloperService(DeveloperRepository developerRepository) implements api.
     }
 
     public Developer findByDeveloperId(UUID userId) throws EntityNotFoundException {
-        return developerRepository.findByDeveloperId(userId).orElseThrow(EntityNotFoundException::new);
+        return developerRepository.findByUuid(userId).orElseThrow(EntityNotFoundException::new);
     }
 
     public void updateDeveloper(Developer developer) throws OptimisticLockException {

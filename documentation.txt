@@ -1,6 +1,6 @@
 Documentation
 0.Configuration:
-    PostgreSQL is necessary for correct working of API
+    PostgreSQL is necessary for correct working of api
  ! ///  Is necessary to manually create or to have existing DB which name is equal to DB name in configuration file ///!
     Default DB name : application
     Default username: postgres

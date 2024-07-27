@@ -30,7 +30,6 @@ public class Project extends AbstractEntity {
     List<Developer> projectDevelopers;
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     List<Task> tasks;
-    @Column(name = "name")
     private String name;
 
     @Builder

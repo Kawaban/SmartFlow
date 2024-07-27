@@ -25,7 +25,7 @@ record AssignmentService(Algorithm algorithm, ProjectService projectService, Ass
                          DeveloperService developerService) implements api.assignment.AssignmentService {
 
     public void setAssignment(UUID assignmentId, AssignmentDecision assignmentDecision) throws EntityNotFoundException, OptimisticLockException {
-        Assignment assignment = assignmentRepository.findByAssignmentId(assignmentId).orElseThrow(EntityNotFoundException::new);
+        Assignment assignment = assignmentRepository.findByUuid(assignmentId).orElseThrow(EntityNotFoundException::new);
 
         if (assignmentDecision.isAccepted()) {
             Task task = taskService.findByTaskId(assignment.getTaskId());
