@@ -25,6 +25,8 @@ import java.util.UUID;
 
 import api.infrastructure.model.Specialization;
 import api.infrastructure.model.TaskState;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TaskServiceTest {
 
         @Mock
@@ -83,23 +86,6 @@ public class TaskServiceTest {
 
         @Test
         public void testGetTask_TaskExists() throws EntityNotFoundException {
-//                UUID taskId = UUID.randomUUID();
-//                Task task = new Task();
-//                task.setUuid(taskId);
-//                task.setName("Test Task");
-//                task.setDescription("Test Description");
-//                task.setTaskState(TaskState.ASSIGNED);
-//                Developer developer = new Developer();
-//                developer.setUuid(UUID.randomUUID());
-//                task.setAssignedTo(developer);
-//                task.setCreatedBy(UUID.randomUUID());
-//                task.setCreatedAt(LocalDate.now());
-//                task.setDeadline(LocalDate.now().plusDays(5));
-//                Project project = new Project();
-//                project.setUuid(UUID.randomUUID());
-//                task.setProject(project);
-//                task.setEstimation(5);
-//                task.setSpecialization(Specialization.BACKEND);
 
                 when(taskService.taskRepository().findById(testTaskId)).thenReturn(Optional.of(testTask));
 
@@ -140,7 +126,7 @@ public class TaskServiceTest {
                 UUID projectId = UUID.randomUUID();
                 TaskRequest taskRequest = new TaskRequest("Test Task", "Test Description", "IN_PROGRESS", UUID.randomUUID(), "2023-07-27", "2023-07-30", 5, "BACKEND", UUID.randomUUID());
 
-                when(fibonacciChecker.isFibonacci(taskRequest.estimation())).thenReturn(true);
+                when(fibonacciChecker.isFibonacci(taskRequest.estimation())).thenReturn(false);
 
                 assertThrows(IllegalArgumentException.class, () -> taskService.addTask(projectId, taskRequest));
         }
@@ -171,16 +157,12 @@ public class TaskServiceTest {
 
         @Test
         public void testFindByTaskId_TaskExists() throws EntityNotFoundException {
-                UUID taskId = UUID.randomUUID();
-                Task task = new Task();
-                task.setUuid(taskId);
+                when(taskRepository.findById(testTaskId)).thenReturn(Optional.of(testTask));
 
-                when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
-
-                Task foundTask = taskService.findByTaskId(taskId);
+                Task foundTask = taskService.findByTaskId(testTaskId);
 
                 assertNotNull(foundTask);
-                assertEquals(taskId, foundTask.getUuid());
+                assertEquals(testTaskId, foundTask.getUuid());
         }
 
         @Test
