@@ -8,7 +8,9 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import api.project.domain.Project;
 
 @Service
 record DeveloperService(DeveloperRepository developerRepository) implements api.developer.DeveloperService {
@@ -17,11 +19,15 @@ record DeveloperService(DeveloperRepository developerRepository) implements api.
         val developer = developerRepository.findByUuid(userId)
                 .orElseThrow(EntityNotFoundException::new);
 
+        List<UUID> projects = developer.getProjects().stream()
+                .map(Project::getUuid)
+                .toList();
+
         return DeveloperResponse.builder()
                 .developerId(developer.getUuid())
                 .specializations(developer.getSpecialization().name())
-                .task(developer.getTask())
-                .projects(developer.getProjects())
+                .task(developer.getTask().getUuid())
+                .projects(projects)
                 .build();
     }
 

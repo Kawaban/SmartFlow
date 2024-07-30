@@ -12,7 +12,7 @@ public record DeveloperResponse(
         UUID developerId,
         String username,
         String specializations,
-        Task task,
-        List<Project> projects
+        UUID task,
+        List<UUID> projects
 ) {
 }

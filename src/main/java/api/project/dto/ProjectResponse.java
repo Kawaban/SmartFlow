@@ -10,6 +10,6 @@ import java.util.UUID;
 @Builder
 public record ProjectResponse(UUID projectId,
                               String projectName,
-                              List<Task> tasks,
-                              List<Developer> developers) {
+                              List<UUID> tasks,
+                              List<UUID> developers) {
 }
