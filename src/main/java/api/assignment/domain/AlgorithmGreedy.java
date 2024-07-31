@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-//According to Weighted Shortest Job First conception shorter estimation tasks have higher priority
+
 //O(n^2)
 @Component
 class AlgorithmGreedy implements Algorithm {
@@ -42,7 +42,7 @@ class AlgorithmGreedy implements Algorithm {
 
         @Override
         public int compare(Task o1, Task o2) {
-            if (o1.getEstimation() < o2.getEstimation())
+            if (o1.getEstimation() > o2.getEstimation())
                 return 1;
             else if (o1.getEstimation() == o2.getEstimation())
                 return 0;

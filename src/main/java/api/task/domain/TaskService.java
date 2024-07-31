@@ -13,6 +13,7 @@ import jakarta.persistence.OptimisticLockException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -91,6 +92,30 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
 
     public void updateTask(Task task) throws OptimisticLockException {
         taskRepository.save(task);
+    }
+
+    public void deleteTask(UUID projectId, UUID taskId) throws EntityNotFoundException {
+        Task task = taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
+        taskRepository.delete(task);
+    }
+
+    public List<TaskResponse> getAllTasks(UUID projectId) {
+        return taskRepository.findAll().stream()
+                .filter(task -> task.getProject().getUuid().equals(projectId))
+                .map(task -> TaskResponse.builder()
+                        .taskId(task.getUuid())
+                        .name(task.getName())
+                        .description(task.getDescription())
+                        .status(String.valueOf(task.getTaskState()))
+                        .createdBy(String.valueOf(task.getCreatedBy()))
+                        .createdAt(String.valueOf(task.getCreatedAt()))
+                        .deadline(String.valueOf(task.getDeadline()))
+                        .assignedTo(task.getAssignedTo().getUuid())
+                        .estimation(task.getEstimation())
+                        .specialization(String.valueOf(task.getSpecialization()))
+                        .projectId(task.getProject().getUuid())
+                        .build())
+                .toList();
     }
 
 

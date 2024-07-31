@@ -50,4 +50,33 @@ record ProjectService(ProjectRepository projectRepository, DeveloperService deve
         return projectRepository.findByUuid(projectId).orElseThrow(EntityNotFoundException::new);
     }
 
+    public void deleteProject(UUID projectId) throws EntityNotFoundException {
+        projectRepository.delete(findByProjectId(projectId));
+    }
+
+    public void updateProject(UUID projectId, ProjectRequest projectRequest) throws EntityNotFoundException {
+        val project = findByProjectId(projectId);
+        project.setName(projectRequest.projectName());
+        projectRepository.save(project);
+    }
+
+    public List<ProjectResponse> getAllProjects() {
+        List<ProjectResponse> projects = new ArrayList<>();
+        projectRepository.findAll().forEach(project -> {
+            List<UUID> tasks = new ArrayList<>();
+            project.getTasks().forEach(task -> tasks.add(task.getUuid()));
+
+            List<UUID> developers = new ArrayList<>();
+            project.getProjectDevelopers().forEach(developer -> developers.add(developer.getUuid()));
+
+            projects.add(ProjectResponse.builder()
+                    .projectId(project.getUuid())
+                    .projectName(project.getName())
+                    .tasks(tasks)
+                    .developers(developers)
+                    .build());
+        });
+        return projects;
+    }
+
 }

@@ -7,6 +7,7 @@ import api.task.dto.TaskRequest;
 import api.task.dto.TaskResponse;
 import jakarta.persistence.OptimisticLockException;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface TaskService {
@@ -19,4 +20,8 @@ public interface TaskService {
     Task findByTaskId(UUID taskId) throws EntityNotFoundException;
 
     void updateTask(Task task) throws OptimisticLockException;
+
+    void deleteTask(UUID projectId, UUID taskId) throws EntityNotFoundException;
+
+    List<TaskResponse> getAllTasks(UUID projectId);
 }
