@@ -79,4 +79,27 @@ record ProjectService(ProjectRepository projectRepository, DeveloperService deve
         return projects;
     }
 
+    @Override
+    public List<ProjectResponse> getAllProjectsForUser(UUID userId) {
+        List<ProjectResponse> projects = new ArrayList<>();
+        projectRepository.findAll().stream()
+                .filter(project -> project.getProjectDevelopers().stream()
+                        .anyMatch(developer -> developer.getUuid().equals(userId)))
+                .forEach(project -> {
+                    List<UUID> tasks = new ArrayList<>();
+                    project.getTasks().forEach(task -> tasks.add(task.getUuid()));
+
+                    List<UUID> developers = new ArrayList<>();
+                    project.getProjectDevelopers().forEach(developer -> developers.add(developer.getUuid()));
+
+                    projects.add(ProjectResponse.builder()
+                            .projectId(project.getUuid())
+                            .projectName(project.getName())
+                            .tasks(tasks)
+                            .developers(developers)
+                            .build());
+                });
+        return projects;
+    }
+
 }

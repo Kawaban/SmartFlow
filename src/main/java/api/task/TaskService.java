@@ -24,4 +24,6 @@ public interface TaskService {
     void deleteTask(UUID projectId, UUID taskId) throws EntityNotFoundException;
 
     List<TaskResponse> getAllTasks(UUID projectId);
+
+    List<TaskResponse> getAllTasksForUser(UUID projectId, UUID userId);
 }

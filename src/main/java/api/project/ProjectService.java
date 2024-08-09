@@ -20,4 +20,6 @@ public interface ProjectService {
     void updateProject(UUID projectId, ProjectRequest projectRequest) throws EntityNotFoundException;
 
     List<ProjectResponse> getAllProjects();
+
+    List<ProjectResponse> getAllProjectsForUser(UUID userId);
 }

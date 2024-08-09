@@ -118,5 +118,26 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
                 .toList();
     }
 
+    @Override
+    public List<TaskResponse> getAllTasksForUser(UUID projectId, UUID userId) {
+        return taskRepository.findAll().stream()
+                .filter(task -> task.getProject().getUuid().equals(projectId))
+                .filter(task -> task.getAssignedTo().getUuid().equals(userId))
+                .map(task -> TaskResponse.builder()
+                        .taskId(task.getUuid())
+                        .name(task.getName())
+                        .description(task.getDescription())
+                        .status(String.valueOf(task.getTaskState()))
+                        .createdBy(String.valueOf(task.getCreatedBy()))
+                        .createdAt(String.valueOf(task.getCreatedAt()))
+                        .deadline(String.valueOf(task.getDeadline()))
+                        .assignedTo(task.getAssignedTo().getUuid())
+                        .estimation(task.getEstimation())
+                        .specialization(String.valueOf(task.getSpecialization()))
+                        .projectId(task.getProject().getUuid())
+                        .build())
+                .toList();
+    }
+
 
 }

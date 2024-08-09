@@ -3,6 +3,7 @@ package api.project.domain;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.project.dto.ProjectRequest;
 import api.project.dto.ProjectResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/projects")
-public record ProjectController(ProjectService projectService) {
+ class ProjectController {
+    private final ProjectService projectService;
+
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
+    }
 
     @GetMapping("/{projectId}")
     public ProjectResponse getProject(@PathVariable UUID projectId) throws EntityNotFoundException {
@@ -33,8 +39,14 @@ public record ProjectController(ProjectService projectService) {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ProjectResponse> getAllProjects() {
         return projectService.getAllProjects();
+    }
+
+    @GetMapping("/users/{userId}")
+    public List<ProjectResponse> getAllProjectsForUser(@PathVariable UUID userId) {
+        return projectService.getAllProjectsForUser(userId);
     }
 
 }
