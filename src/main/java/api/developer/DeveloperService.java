@@ -6,6 +6,7 @@ import api.developer.dto.DeveloperResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface DeveloperService {
@@ -18,4 +19,6 @@ public interface DeveloperService {
     Developer findByDeveloperId(UUID userId) throws EntityNotFoundException;
 
     void updateDeveloper(Developer developer) throws OptimisticLockException;
+
+    List<DeveloperResponse> getAllDevelopers();
 }

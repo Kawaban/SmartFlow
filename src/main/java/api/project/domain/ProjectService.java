@@ -13,24 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-record ProjectService(ProjectRepository projectRepository, DeveloperService developerService) implements api.project.ProjectService {
+record ProjectService(ProjectRepository projectRepository, DeveloperService developerService, ProjectMapper projectMapper) implements api.project.ProjectService {
 
     public ProjectResponse getProject(UUID projectId) throws EntityNotFoundException {
         val project = projectRepository.findById(projectId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        List<UUID> tasks = new ArrayList<>();
-        project.getTasks().forEach(task -> tasks.add(task.getUuid()));
-
-        List<UUID> developers = new ArrayList<>();
-        project.getProjectDevelopers().forEach(developer -> developers.add(developer.getUuid()));
-
-        return ProjectResponse.builder()
-                .projectId(project.getUuid())
-                .projectName(project.getName())
-                .tasks(tasks)
-                .developers(developers)
-                .build();
+        return projectMapper.toProjectResponse(project);
 
     }
 
@@ -61,45 +50,18 @@ record ProjectService(ProjectRepository projectRepository, DeveloperService deve
     }
 
     public List<ProjectResponse> getAllProjects() {
-        List<ProjectResponse> projects = new ArrayList<>();
-        projectRepository.findAll().forEach(project -> {
-            List<UUID> tasks = new ArrayList<>();
-            project.getTasks().forEach(task -> tasks.add(task.getUuid()));
-
-            List<UUID> developers = new ArrayList<>();
-            project.getProjectDevelopers().forEach(developer -> developers.add(developer.getUuid()));
-
-            projects.add(ProjectResponse.builder()
-                    .projectId(project.getUuid())
-                    .projectName(project.getName())
-                    .tasks(tasks)
-                    .developers(developers)
-                    .build());
-        });
-        return projects;
+        return projectRepository.findAll().stream()
+                .map(projectMapper::toProjectResponse)
+                .toList();
     }
 
     @Override
     public List<ProjectResponse> getAllProjectsForUser(UUID userId) {
-        List<ProjectResponse> projects = new ArrayList<>();
-        projectRepository.findAll().stream()
+        return projectRepository.findAll().stream()
                 .filter(project -> project.getProjectDevelopers().stream()
                         .anyMatch(developer -> developer.getUuid().equals(userId)))
-                .forEach(project -> {
-                    List<UUID> tasks = new ArrayList<>();
-                    project.getTasks().forEach(task -> tasks.add(task.getUuid()));
-
-                    List<UUID> developers = new ArrayList<>();
-                    project.getProjectDevelopers().forEach(developer -> developers.add(developer.getUuid()));
-
-                    projects.add(ProjectResponse.builder()
-                            .projectId(project.getUuid())
-                            .projectName(project.getName())
-                            .tasks(tasks)
-                            .developers(developers)
-                            .build());
-                });
-        return projects;
+                .map(projectMapper::toProjectResponse)
+                .toList();
     }
 
 }

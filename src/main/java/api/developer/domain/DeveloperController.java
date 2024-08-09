@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,5 +29,11 @@ class DeveloperController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void addDeveloper(@RequestBody DeveloperRequest developerRequest) throws IllegalArgumentException {
         developerService.addDeveloper(developerRequest);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<DeveloperResponse> getAllDevelopers() {
+        return developerService.getAllDevelopers();
     }
 }

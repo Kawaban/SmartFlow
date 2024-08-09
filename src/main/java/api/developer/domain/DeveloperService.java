@@ -13,22 +13,13 @@ import java.util.UUID;
 import api.project.domain.Project;
 
 @Service
-record DeveloperService(DeveloperRepository developerRepository) implements api.developer.DeveloperService {
+record DeveloperService(DeveloperRepository developerRepository, DeveloperMapper developerMapper) implements api.developer.DeveloperService {
 
     public DeveloperResponse getDevelopers(UUID userId) throws EntityNotFoundException {
         val developer = developerRepository.findByUuid(userId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        List<UUID> projects = developer.getProjects().stream()
-                .map(Project::getUuid)
-                .toList();
-
-        return DeveloperResponse.builder()
-                .developerId(developer.getUuid())
-                .specializations(developer.getSpecialization().name())
-                .task(developer.getTask().getUuid())
-                .projects(projects)
-                .build();
+        return developerMapper.toDeveloperResponse(developer);
     }
 
 
@@ -49,6 +40,13 @@ record DeveloperService(DeveloperRepository developerRepository) implements api.
 
     public void updateDeveloper(Developer developer) throws OptimisticLockException {
         developerRepository.save(developer);
+    }
+
+    @Override
+    public List<DeveloperResponse> getAllDevelopers() {
+        return developerRepository().findAll().stream()
+                .map(developerMapper::toDeveloperResponse)
+                .toList();
     }
 
 }

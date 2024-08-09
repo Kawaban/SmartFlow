@@ -19,26 +19,16 @@ import java.util.UUID;
 @Service
 record TaskService(TaskRepository taskRepository, DeveloperService developerService,
                    ProjectService projectService, TaskLogRepository taskLogRepository,
-                   FibonacciChecker fibonacciChecker) implements api.task.TaskService {
+                   FibonacciChecker fibonacciChecker, TaskMapper taskMapper) implements api.task.TaskService {
 
+    @Override
     public TaskResponse getTask(UUID taskId) throws EntityNotFoundException {
         return taskRepository.findById(taskId)
-                .map(task -> TaskResponse.builder()
-                        .taskId(task.getUuid())
-                        .name(task.getName())
-                        .description(task.getDescription())
-                        .status(String.valueOf(task.getTaskState()))
-                        .createdBy(String.valueOf(task.getCreatedBy()))
-                        .createdAt(String.valueOf(task.getCreatedAt()))
-                        .deadline(String.valueOf(task.getDeadline()))
-                        .assignedTo(task.getAssignedTo().getUuid())
-                        .estimation(task.getEstimation())
-                        .specialization(String.valueOf(task.getSpecialization()))
-                        .projectId(task.getProject().getUuid())
-                        .build())
+                .map(taskMapper::toTaskResponse)
                 .orElseThrow(EntityNotFoundException::new);
     }
 
+    @Override
     public void addTask(UUID projectId, TaskRequest taskRequest) throws EntityNotFoundException, IllegalArgumentException {
 
         if (fibonacciChecker.isFibonacci(taskRequest.estimation())) {
@@ -60,6 +50,7 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
         taskRepository.save(task);
     }
 
+    @Override
     public void updateTaskStatus(UUID projectId, UUID taskId, TaskChange taskChange) throws EntityNotFoundException, OptimisticLockException, IllegalArgumentException {
         Task task = taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
         task.setTaskState(TaskState.valueOf(taskChange.status()));
@@ -86,35 +77,27 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
         taskRepository.save(task);
     }
 
+    @Override
     public Task findByTaskId(UUID taskId) throws EntityNotFoundException {
         return taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
     }
 
+    @Override
     public void updateTask(Task task) throws OptimisticLockException {
         taskRepository.save(task);
     }
 
+    @Override
     public void deleteTask(UUID projectId, UUID taskId) throws EntityNotFoundException {
         Task task = taskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
         taskRepository.delete(task);
     }
 
+    @Override
     public List<TaskResponse> getAllTasks(UUID projectId) {
         return taskRepository.findAll().stream()
                 .filter(task -> task.getProject().getUuid().equals(projectId))
-                .map(task -> TaskResponse.builder()
-                        .taskId(task.getUuid())
-                        .name(task.getName())
-                        .description(task.getDescription())
-                        .status(String.valueOf(task.getTaskState()))
-                        .createdBy(String.valueOf(task.getCreatedBy()))
-                        .createdAt(String.valueOf(task.getCreatedAt()))
-                        .deadline(String.valueOf(task.getDeadline()))
-                        .assignedTo(task.getAssignedTo().getUuid())
-                        .estimation(task.getEstimation())
-                        .specialization(String.valueOf(task.getSpecialization()))
-                        .projectId(task.getProject().getUuid())
-                        .build())
+                .map(taskMapper::toTaskResponse)
                 .toList();
     }
 
@@ -123,19 +106,7 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
         return taskRepository.findAll().stream()
                 .filter(task -> task.getProject().getUuid().equals(projectId))
                 .filter(task -> task.getAssignedTo().getUuid().equals(userId))
-                .map(task -> TaskResponse.builder()
-                        .taskId(task.getUuid())
-                        .name(task.getName())
-                        .description(task.getDescription())
-                        .status(String.valueOf(task.getTaskState()))
-                        .createdBy(String.valueOf(task.getCreatedBy()))
-                        .createdAt(String.valueOf(task.getCreatedAt()))
-                        .deadline(String.valueOf(task.getDeadline()))
-                        .assignedTo(task.getAssignedTo().getUuid())
-                        .estimation(task.getEstimation())
-                        .specialization(String.valueOf(task.getSpecialization()))
-                        .projectId(task.getProject().getUuid())
-                        .build())
+                .map(taskMapper::toTaskResponse)
                 .toList();
     }
 
