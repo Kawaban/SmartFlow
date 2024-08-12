@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Developer API
+  description: API for managing developers
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Developer API server
+tags:
+  - name: Developers
+    description: Operations related to developers
+paths:
+  /developers/{developerId}:
+    get:
+      tags:
+        - Developers
+      summary: Get a specific developer by ID
+      operationId: getDeveloper
+      parameters:
+        - name: developerId
+          in: path
+          required: true
+          description: The UUID of the developer to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Developer retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeveloperResponse'
+        '403':
+          description: Forbidden (only accessible by admin or the developer themselves)
+        '404':
+          description: Developer not found
+        '500':
+          description: Internal server error
+
+  /developers:
+    post:
+      tags:
+        - Developers
+      summary: Add a new developer
+      operationId: addDeveloper
+      requestBody:
+        description: Details of the new developer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeveloperRequest'
+      responses:
+        '200':
+          description: Developer created successfully
+        '400':
+          description: Invalid developer data
+        '403':
+          description: Forbidden (only accessible by admins)
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - Developers
+      summary: Get all developers (Admin only)
+      operationId: getAllDevelopers
+      responses:
+        '200':
+          description: List of all developers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeveloperResponse'
+        '403':
+          description: Forbidden (only accessible by admins)
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    DeveloperRequest:
+      type: object
+      properties:
+        specialization:
+          type: string
+          description: Specialization of the developer
+        login:
+          type: string
+          description: Login username of the developer
+      required:
+        - specialization
+        - login
+
+    DeveloperResponse:
+      type: object
+      properties:
+        developerId:
+          type: string
+          format: uuid
+          description: Unique identifier of the developer
+        username:
+          type: string
+          description: Username of the developer
+        specializations:
+          type: string
+          description: Specializations of the developer
+        task:
+          type: string
+          format: uuid
+          description: UUID of the task currently assigned to the developer
+        projects:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of project UUIDs the developer is involved in
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

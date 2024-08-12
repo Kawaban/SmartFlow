@@ -1,0 +1,314 @@
+openapi: 3.0.3
+info:
+  title: Task API
+  description: API for managing tasks within projects
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Task API server
+tags:
+  - name: Tasks
+    description: Operations related to tasks
+paths:
+  /projects/{projectId}/tasks/{taskId}:
+    get:
+      tags:
+        - Tasks
+      summary: Get a specific task by ID within a project
+      operationId: getTask
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project the task belongs to
+          schema:
+            type: string
+            format: uuid
+        - name: taskId
+          in: path
+          required: true
+          description: The UUID of the task to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Task or project not found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - Tasks
+      summary: Update the status of a specific task by ID within a project
+      operationId: updateTaskStatus
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project the task belongs to
+          schema:
+            type: string
+            format: uuid
+        - name: taskId
+          in: path
+          required: true
+          description: The UUID of the task to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Details of the status change
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskChange'
+      responses:
+        '200':
+          description: Task status updated successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Task or project not found
+        '409':
+          description: Conflict due to optimistic locking issues
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a specific task by ID within a project
+      operationId: deleteTask
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project the task belongs to
+          schema:
+            type: string
+            format: uuid
+        - name: taskId
+          in: path
+          required: true
+          description: The UUID of the task to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task deleted successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Task or project not found
+        '500':
+          description: Internal server error
+
+  /projects/{projectId}/tasks:
+    post:
+      tags:
+        - Tasks
+      summary: Add a new task to a specific project
+      operationId: addTask
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project to add the task to
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Details of the new task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '200':
+          description: Task created successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Project not found
+        '400':
+          description: Invalid task data
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks for a specific project (Admin only)
+      operationId: getAllTasks
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project whose tasks to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of tasks for the project
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        '403':
+          description: Forbidden (only accessible by admins)
+        '500':
+          description: Internal server error
+
+  /projects/{projectId}/tasks/users/{userId}:
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks for a specific user within a project
+      operationId: getAllTasksForUser
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project the tasks belong to
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          description: The UUID of the user whose tasks to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of tasks for the user within the project
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        '404':
+          description: User or project not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    TaskRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the task
+        description:
+          type: string
+          description: Description of the task
+        status:
+          type: string
+          description: Current status of the task
+        createdBy:
+          type: string
+          format: uuid
+          description: UUID of the user who created the task
+        createdAt:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        deadline:
+          type: string
+          format: date-time
+          description: Deadline for the task
+        estimation:
+          type: integer
+          description: Estimated time to complete the task (in hours)
+        specialization:
+          type: string
+          description: Specialization required for the task
+        assignedTo:
+          type: string
+          format: uuid
+          description: UUID of the user the task is assigned to
+      required:
+        - name
+        - description
+        - status
+        - createdBy
+        - createdAt
+        - deadline
+        - estimation
+        - specialization
+
+    TaskChange:
+      type: object
+      properties:
+        status:
+          type: string
+          description: New status for the task
+      required:
+        - status
+
+    TaskResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the task
+        description:
+          type: string
+          description: Description of the task
+        status:
+          type: string
+          description: Current status of the task
+        createdBy:
+          type: string
+          format: uuid
+          description: UUID of the user who created the task
+        createdAt:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        deadline:
+          type: string
+          format: date-time
+          description: Deadline for the task
+        assignedTo:
+          type: string
+          format: uuid
+          description: UUID of the user the task is assigned to
+        estimation:
+          type: integer
+          description: Estimated time to complete the task (in hours)
+        specialization:
+          type: string
+          description: Specialization required for the task
+        projectId:
+          type: string
+          format: uuid
+          description: UUID of the project the task belongs to
+        taskId:
+          type: string
+          format: uuid
+          description: UUID of the task
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: [ ]

@@ -1,0 +1,208 @@
+openapi: 3.0.3
+info:
+  title: Project API
+  description: API for managing projects
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Project API server
+tags:
+  - name: Projects
+    description: Operations related to projects
+paths:
+  /projects/{projectId}:
+    get:
+      tags:
+        - Projects
+      summary: Get a specific project by ID
+      operationId: getProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Project not found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - Projects
+      summary: Update an existing project by ID
+      operationId: updateProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Project details to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Project not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - Projects
+      summary: Delete a specific project by ID
+      operationId: deleteProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: The UUID of the project to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project deleted successfully
+        '403':
+          description: Forbidden
+        '404':
+          description: Project not found
+        '500':
+          description: Internal server error
+
+  /projects:
+    post:
+      tags:
+        - Projects
+      summary: Add a new project
+      operationId: addProject
+      requestBody:
+        description: Details of the new project
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Project created successfully
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - Projects
+      summary: Get all projects (Admin only)
+      operationId: getAllProjects
+      responses:
+        '200':
+          description: List of all projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectResponse'
+        '403':
+          description: Forbidden (only accessible by admins)
+        '500':
+          description: Internal server error
+
+  /projects/users/{userId}:
+    get:
+      tags:
+        - Projects
+      summary: Get all projects for a specific user
+      operationId: getAllProjectsForUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The UUID of the user whose projects to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of projects for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    ProjectRequest:
+      type: object
+      properties:
+        projectName:
+          type: string
+          description: Name of the project
+        developers:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of developer UUIDs assigned to the project
+      required:
+        - projectName
+
+    ProjectResponse:
+      type: object
+      properties:
+        projectId:
+          type: string
+          format: uuid
+          description: Unique identifier of the project
+        projectName:
+          type: string
+          description: Name of the project
+        tasks:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of task UUIDs associated with the project
+        developers:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of developer UUIDs assigned to the project
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+security:
+  - bearerAuth: []

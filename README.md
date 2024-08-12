@@ -23,6 +23,11 @@ The user can assign a task to a team member or use the smart assignment, which w
 ### Smart Assignment
 The algorithm ranks each team member based on the number of tasks completed, the number of tasks failed, and the time taken for task completion. Tasks are then assigned to team members starting with those who have the highest ranks. If there are more tasks than team members, the algorithm prioritizes assigning more complex tasks to those with higher ranks.
 
+## API Documentation
+- The API documentation is available at 'http://localhost:8080/swagger-ui/index.html'
+- The API documentation follows the OpenAPI specification
+- Used Swagger UI to display the API documentation
+
 ## Installation
 - Clone the repository
 - Create a PostgreSQL database named `db_name`

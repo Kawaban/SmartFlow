@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: Authentication API
+  description: API for user authentication and registration
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Authentication API server
+tags:
+  - name: Authentication
+    description: Operations related to user authentication and registration
+paths:
+  /authentication/login:
+    post:
+      tags:
+        - Authentication
+      summary: Log in a user
+      operationId: login
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Unauthorized (invalid login or password)
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  /authentication/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new developer
+      operationId: register
+      requestBody:
+        description: Developer credentials for registration
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeveloperCredentialsRequest'
+      responses:
+        '200':
+          description: Developer registered successfully
+        '400':
+          description: Bad request (invalid input)
+        '409':
+          description: Conflict (developer already exists)
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      properties:
+        login:
+          type: string
+          description: The login username of the user
+        password:
+          type: string
+          format: password
+          description: The password of the user
+      required:
+        - login
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token provided upon successful authentication
+
+    DeveloperCredentialsRequest:
+      type: object
+      properties:
+        login:
+          type: string
+          description: The login username of the developer
+        password:
+          type: string
+          format: password
+          description: The password of the developer
+        specialization:
+          type: string
+          description: The specialization of the developer
+      required:
+        - login
+        - password
+        - specialization
