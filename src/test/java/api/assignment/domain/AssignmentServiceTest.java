@@ -1,9 +1,5 @@
 package api.assignment.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import api.assignment.dto.AssignmentDecision;
 import api.assignment.dto.AssignmentResponse;
 import api.developer.DeveloperService;
@@ -16,7 +12,6 @@ import api.project.domain.Project;
 import api.task.TaskService;
 import api.task.domain.Task;
 import jakarta.persistence.OptimisticLockException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssignmentServiceTest {

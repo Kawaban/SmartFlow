@@ -1,6 +1,5 @@
 package api.project.domain;
 
-import api.project.dto.ProjectRequest;
 import api.project.dto.ProjectResponse;
 import org.springframework.stereotype.Component;
 

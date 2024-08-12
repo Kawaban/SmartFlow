@@ -1,26 +1,24 @@
 package api.developer.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.List;
-import java.util.ArrayList;
-
 import api.developer.dto.DeveloperRequest;
 import api.developer.dto.DeveloperResponse;
 import api.infrastructure.exception.EntityNotFoundException;
+import api.infrastructure.model.Specialization;
 import api.project.domain.Project;
 import api.task.domain.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import api.infrastructure.model.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)

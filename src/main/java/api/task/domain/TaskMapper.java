@@ -1,15 +1,7 @@
 package api.task.domain;
 
-import api.developer.DeveloperService;
-import api.infrastructure.model.Specialization;
-import api.infrastructure.model.TaskState;
-import api.project.ProjectService;
-import api.task.dto.TaskRequest;
 import api.task.dto.TaskResponse;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Component
 class TaskMapper {

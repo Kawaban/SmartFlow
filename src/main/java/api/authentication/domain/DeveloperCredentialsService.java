@@ -2,7 +2,6 @@ package api.authentication.domain;
 
 import api.authentication.dto.DeveloperCredentialsRequest;
 import api.developer.DeveloperService;
-import api.developer.domain.Developer;
 import api.developer.dto.DeveloperRequest;
 import api.infrastructure.exception.EntityNotFoundException;
 import lombok.val;

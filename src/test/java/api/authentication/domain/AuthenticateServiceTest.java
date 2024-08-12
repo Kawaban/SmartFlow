@@ -1,18 +1,12 @@
 package api.authentication.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import api.authentication.dto.AuthRequest;
 import api.authentication.dto.AuthResponse;
 import api.authentication.dto.DeveloperCredentialsRequest;
-import api.developer.domain.Developer;
 import api.infrastructure.exception.DeveloperAlreadyExistsException;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.jwt.JwtService;
 import api.jwt.dto.JwtUser;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,8 +19,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticateServiceTest {

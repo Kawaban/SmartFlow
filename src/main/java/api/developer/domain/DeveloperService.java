@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import api.project.domain.Project;
 
 @Service
 record DeveloperService(DeveloperRepository developerRepository, DeveloperMapper developerMapper) implements api.developer.DeveloperService {

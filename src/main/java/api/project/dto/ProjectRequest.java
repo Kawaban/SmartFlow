@@ -1,6 +1,5 @@
 package api.project.dto;
 
-import api.developer.domain.Developer;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;

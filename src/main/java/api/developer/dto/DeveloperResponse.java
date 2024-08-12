@@ -1,7 +1,5 @@
 package api.developer.dto;
 
-import api.project.domain.Project;
-import api.task.domain.Task;
 import lombok.Builder;
 
 import java.util.List;

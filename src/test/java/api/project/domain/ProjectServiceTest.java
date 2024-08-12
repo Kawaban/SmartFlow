@@ -3,7 +3,6 @@ package api.project.domain;
 import api.developer.DeveloperService;
 import api.developer.domain.Developer;
 import api.infrastructure.exception.EntityNotFoundException;
-import api.project.domain.ProjectService;
 import api.project.dto.ProjectRequest;
 import api.project.dto.ProjectResponse;
 import api.task.domain.Task;
@@ -13,13 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

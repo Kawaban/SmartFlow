@@ -3,8 +3,6 @@ package api.authentication.domain;
 import api.authentication.dto.AuthRequest;
 import api.authentication.dto.AuthResponse;
 import api.authentication.dto.DeveloperCredentialsRequest;
-import api.developer.DeveloperService;
-import api.developer.dto.DeveloperRequest;
 import api.infrastructure.exception.DeveloperAlreadyExistsException;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.jwt.JwtService;

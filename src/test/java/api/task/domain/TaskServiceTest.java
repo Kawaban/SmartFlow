@@ -4,30 +4,26 @@ import api.developer.DeveloperService;
 import api.developer.domain.Developer;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.infrastructure.model.FibonacciChecker;
+import api.infrastructure.model.Specialization;
+import api.infrastructure.model.TaskState;
 import api.project.ProjectService;
 import api.project.domain.Project;
-import api.task.domain.TaskService;
 import api.task.dto.TaskChange;
 import api.task.dto.TaskRequest;
 import api.task.dto.TaskResponse;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
-
-import api.infrastructure.model.Specialization;
-import api.infrastructure.model.TaskState;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
