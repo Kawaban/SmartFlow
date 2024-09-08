@@ -20,32 +20,39 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "tasks")
+@Table(name = "itaskmanager_tasks")
 public class Task extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-    @Column(name = "created_at")
+
+    @Column(nullable = false)
     private LocalDate createdAt;
 
-    @Column(name = "description")
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "deadline")
+    @Column(nullable = false)
     private LocalDate deadline;
-    @Column(name = "created_by")
+
+    @Column(nullable = false)
     private UUID createdBy;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "task_state")
+    @Column(nullable = false)
     private TaskState taskState;
-    @Column(name = "name")
+
+    @Column(nullable = false, unique = true)
     private String name;
-    @Column(name = "estimation")
+
+    @Column(nullable = false)
     private int estimation;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "specialization")
+    @Column(nullable = false)
     private Specialization specialization;
+
     @OneToOne(mappedBy = "task")
     private Developer assignedTo;
 

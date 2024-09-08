@@ -22,17 +22,18 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "developers")
+@Table(name = "itaskmanager_developers")
 public class Developer extends AbstractEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "projects_developers",
+            name = "itaskmanager_projects_developers",
             joinColumns = @JoinColumn(name = "developer_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id")
     )
     private List<Project> projects;
 
+    @Column(nullable = false, unique = true)
     private String username;
 
     @OneToOne
@@ -40,6 +41,7 @@ public class Developer extends AbstractEntity {
     private Task task;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Specialization specialization;
 
     @OneToMany(mappedBy = "developer", fetch = FetchType.LAZY)

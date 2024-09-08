@@ -17,19 +17,21 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "projects")
+@Table(name = "itaskmanager_projects")
 @NoArgsConstructor
 public class Project extends AbstractEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "projects_developers",
+            name = "itaskmanager_projects_developers",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "developer_id")
     )
-    List<Developer> projectDevelopers;
+    private List<Developer> projectDevelopers;
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    List<Task> tasks;
+    private List<Task> tasks;
+
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Builder

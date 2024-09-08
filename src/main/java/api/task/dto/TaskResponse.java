@@ -9,7 +9,7 @@ public record TaskResponse(
         String name,
         String description,
         String status,
-        String createdBy,
+        UUID createdBy,
         String createdAt,
         String deadline,
         UUID assignedTo,

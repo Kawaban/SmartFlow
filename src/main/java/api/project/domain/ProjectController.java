@@ -3,6 +3,8 @@ package api.project.domain;
 import api.infrastructure.exception.EntityNotFoundException;
 import api.project.dto.ProjectRequest;
 import api.project.dto.ProjectResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,14 +13,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/projects")
+@RequiredArgsConstructor
  class ProjectController {
     private final ProjectService projectService;
 
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
 
     @GetMapping("/{projectId}")
+    @PostAuthorize("hasRole('ROLE_ADMIN') or (#returnObject.developers.contains(authentication.principal.uuid))")
     public ProjectResponse getProject(@PathVariable UUID projectId) throws EntityNotFoundException {
         return projectService.getProject(projectId);
     }
@@ -29,11 +30,13 @@ import java.util.UUID;
     }
 
     @DeleteMapping("/{projectId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @projectService.getProject(#projectId).developers.contains(authentication.principal.uuid)")
     public void deleteProject(@PathVariable UUID projectId) throws EntityNotFoundException {
         projectService.deleteProject(projectId);
     }
 
     @PutMapping("/{projectId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @projectService.getProject(#projectId).developers.contains(authentication.principal.uuid)")
     public void updateProject(@PathVariable UUID projectId, @RequestBody ProjectRequest projectRequest) throws EntityNotFoundException {
         projectService.updateProject(projectId, projectRequest);
     }
@@ -45,6 +48,7 @@ import java.util.UUID;
     }
 
     @GetMapping("/users/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userId == authentication.principal.uuid")
     public List<ProjectResponse> getAllProjectsForUser(@PathVariable UUID userId) {
         return projectService.getAllProjectsForUser(userId);
     }

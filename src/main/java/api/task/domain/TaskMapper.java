@@ -12,7 +12,7 @@ class TaskMapper {
                 .name(task.getName())
                 .description(task.getDescription())
                 .status(String.valueOf(task.getTaskState()))
-                .createdBy(String.valueOf(task.getCreatedBy()))
+                .createdBy(task.getCreatedBy())
                 .createdAt(String.valueOf(task.getCreatedAt()))
                 .deadline(String.valueOf(task.getDeadline()))
                 .assignedTo(task.getAssignedTo().getUuid())

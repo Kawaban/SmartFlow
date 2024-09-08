@@ -20,7 +20,7 @@ class DeveloperController {
     }
 
     @GetMapping("/{developerId}")
-    @PostAuthorize("hasRole('ROLE_ADMIN') or returnObject.username == authentication.principal")
+    @PostAuthorize("hasRole('ROLE_ADMIN') or returnObject.username == authentication.principal.username")
     public DeveloperResponse getDevelopers(@PathVariable UUID developerId) throws EntityNotFoundException {
         return developerService.getDevelopers(developerId);
     }

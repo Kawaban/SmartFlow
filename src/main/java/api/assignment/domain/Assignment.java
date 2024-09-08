@@ -1,6 +1,7 @@
 package api.assignment.domain;
 
 import api.infrastructure.model.AbstractEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -15,10 +16,12 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "assignments")
+@Table(name = "itaskmanager_assignments")
 class Assignment extends AbstractEntity {
-
+    @Column(nullable = false)
     private UUID developerId;
+
+    @Column(nullable = false)
     private UUID taskId;
 
     @Builder

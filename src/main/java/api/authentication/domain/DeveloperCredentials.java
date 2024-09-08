@@ -19,10 +19,16 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "developer_credentials")
+@Table(name = "itaskmanager_developer_credentials")
 class DeveloperCredentials extends AbstractEntity implements UserDetails {
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
     private char[] password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @OneToOne(cascade = CascadeType.ALL)

@@ -16,6 +16,7 @@ import java.util.UUID;
 public abstract class AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
     private UUID uuid;
 
     @Version
