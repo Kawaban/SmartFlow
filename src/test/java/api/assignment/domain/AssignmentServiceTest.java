@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,25 +115,60 @@ class AssignmentServiceTest {
         UUID projectId = UUID.randomUUID();
         Project project = new Project();
         project.setUuid(projectId);
-        project.setTasks(new ArrayList<>());
-        project.setProjectDevelopers(new ArrayList<>());
+
+        Task task = new Task();
+        task.setUuid(UUID.randomUUID());
+        task.setTaskState(TaskState.DEFAULT);
+        task.setSpecialization(Specialization.BACKEND);
+
+        Task task2 = new Task();
+        task2.setUuid(UUID.randomUUID());
+        task2.setTaskState(TaskState.DEFAULT);
+        task2.setSpecialization(Specialization.BACKEND);
+
+        Developer developer = new Developer();
+        developer.setUuid(UUID.randomUUID());
+        developer.setSpecialization(Specialization.BACKEND);
+
+        Developer developer2 = new Developer();
+        developer2.setUuid(UUID.randomUUID());
+        developer2.setSpecialization(Specialization.BACKEND);
+
+
+        ArrayList<Task> tasks = new ArrayList<>();
+        tasks.add(task);
+        tasks.add(task2);
+        project.setTasks(tasks);
+
+        ArrayList<Developer> developers = new ArrayList<>();
+        developers.add(developer);
+        developers.add(developer2);
+        project.setProjectDevelopers(developers);
 
         when(projectService.findByProjectId(projectId)).thenReturn(project);
 
         ArrayList<Assignment> assignments = new ArrayList<>();
         assignments.add(Assignment.builder()
-                .taskId(UUID.randomUUID())
-                .developerId(UUID.randomUUID())
+                .taskId(task.getUuid())
+                .developerId(developer.getUuid())
                 .id(UUID.randomUUID())
                 .build());
-        when(algorithm.delegate(any(ArrayList.class), any(ArrayList.class))).thenReturn(assignments);
+
+        assignments.add(Assignment.builder()
+                .taskId(task2.getUuid())
+                .developerId(developer2.getUuid())
+                .id(UUID.randomUUID())
+                .build());
+
+
+        lenient().when(algorithm.delegate(tasks, developers)).thenReturn(assignments);
 
         List<AssignmentResponse> responses = assignmentService.delegateTasks(projectId);
 
         assertNotNull(responses);
-        assertEquals(1, responses.size());
-        assertEquals(assignments.get(0).getTaskId(), responses.get(0).taskId());
-        assertEquals(assignments.get(0).getDeveloperId(), responses.get(0).developerId());
-        assertEquals(assignments.get(0).getUuid(), responses.get(0).assignmentId());
+        assertEquals(2, responses.size());
+        assertEquals(assignments.getFirst().getTaskId(), responses.getFirst().taskId());
+        assertEquals(assignments.getFirst().getDeveloperId(), responses.getFirst().developerId());
+        assertEquals(assignments.getFirst().getUuid(), responses.getFirst().assignmentId());
     }
 }

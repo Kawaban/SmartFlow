@@ -30,7 +30,6 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class TaskServiceTest {
 
         @Mock
@@ -48,6 +47,9 @@ public class TaskServiceTest {
         @Mock
         private FibonacciChecker fibonacciChecker;
 
+        @Mock
+        private TaskMapper taskMapper;
+
         @InjectMocks
         private TaskService taskService;
 
@@ -58,7 +60,6 @@ public class TaskServiceTest {
 
         @BeforeEach
         public void setUp() {
-                MockitoAnnotations.openMocks(this);
                 testTaskId = UUID.randomUUID();
                 testTask = new Task();
                 testTask.setUuid(testTaskId);
@@ -84,6 +85,7 @@ public class TaskServiceTest {
         public void testGetTask_TaskExists() throws EntityNotFoundException {
 
                 when(taskService.taskRepository().findById(testTaskId)).thenReturn(Optional.of(testTask));
+                when(taskService.taskMapper().toTaskResponse(testTask)).thenReturn(new TaskResponse(testTask.getName(), testTask.getDescription(), testTask.getTaskState().toString(), testTask.getCreatedBy(), testTask.getCreatedAt().toString(), testTask.getDeadline().toString(),testTask.getAssignedTo().getUuid(), testTask.getEstimation(), testTask.getSpecialization().toString(),testTask.getProject().getUuid(), testTask.getUuid()));
 
                 TaskResponse response = taskService.getTask(testTaskId);
 
@@ -133,7 +135,6 @@ public class TaskServiceTest {
                 TaskChange taskChange = new TaskChange("COMPLETED");
 
                 when(taskRepository.findById(testTaskId)).thenReturn(Optional.of(testTask));
-                when(projectService.findByProjectId(testProject.getUuid())).thenReturn(testProject);
                 taskService.updateTaskStatus(testProject.getUuid(),testTaskId, taskChange);
 
                 verify(taskLogRepository, times(1)).save(any(TaskLog.class));

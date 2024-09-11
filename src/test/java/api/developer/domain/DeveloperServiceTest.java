@@ -27,6 +27,9 @@ class DeveloperServiceTest {
     @Mock
     private DeveloperRepository developerRepository;
 
+    @Mock
+    private DeveloperMapper developerMapper;
+
     @InjectMocks
     private DeveloperService developerService;
 
@@ -48,6 +51,7 @@ class DeveloperServiceTest {
         developer.setTask(task);
 
         when(developerRepository.findByUuid(userId)).thenReturn(Optional.of(developer));
+        when(developerMapper.toDeveloperResponse(developer)).thenReturn(new DeveloperResponse(userId,"username", "BACKEND",task.getUuid(), List.of(project1.getUuid(), project2.getUuid())));
 
         DeveloperResponse response = developerService.getDevelopers(userId);
 

@@ -3,6 +3,7 @@ package api.project.domain;
 import api.developer.DeveloperService;
 import api.developer.domain.Developer;
 import api.infrastructure.exception.EntityNotFoundException;
+import api.infrastructure.model.AbstractEntity;
 import api.project.dto.ProjectRequest;
 import api.project.dto.ProjectResponse;
 import api.task.domain.Task;
@@ -29,6 +30,9 @@ class ProjectServiceTest {
     @Mock
     private DeveloperService developerService;
 
+    @Mock
+    private ProjectMapper projectMapper;
+
     @InjectMocks
     private ProjectService projectService;
 
@@ -54,6 +58,7 @@ class ProjectServiceTest {
         project.setProjectDevelopers(developers);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectMapper.toProjectResponse(project)).thenReturn(new ProjectResponse(projectId, "Test Project", tasks.stream().map(AbstractEntity::getUuid).toList(), developers.stream().map(AbstractEntity::getUuid).toList()));
 
         ProjectResponse response = projectService.getProject(projectId);
 

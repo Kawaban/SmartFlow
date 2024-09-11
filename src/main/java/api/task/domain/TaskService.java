@@ -31,7 +31,7 @@ record TaskService(TaskRepository taskRepository, DeveloperService developerServ
     @Override
     public void addTask(UUID projectId, TaskRequest taskRequest) throws EntityNotFoundException, IllegalArgumentException {
 
-        if (fibonacciChecker.isFibonacci(taskRequest.estimation())) {
+        if (!fibonacciChecker.isFibonacci(taskRequest.estimation())) {
             throw new IllegalArgumentException("Estimation is not a fibonacci number");
         }
 
