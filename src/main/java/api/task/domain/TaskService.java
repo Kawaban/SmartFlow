@@ -2,7 +2,7 @@ package api.task.domain;
 
 import api.developer.DeveloperService;
 import api.infrastructure.exception.EntityNotFoundException;
-import api.infrastructure.model.FibonacciChecker;
+import api.infrastructure.util.FibonacciChecker;
 import api.infrastructure.model.Specialization;
 import api.infrastructure.model.TaskState;
 import api.project.ProjectService;

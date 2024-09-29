@@ -1,4 +1,4 @@
-package api.infrastructure.model;
+package api.infrastructure.util;
 
 import org.springframework.stereotype.Component;
 
