@@ -1,6 +1,7 @@
-package api.jwt.domain;
+package api.infrastructure.config;
 
 
+import api.jwt.domain.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
